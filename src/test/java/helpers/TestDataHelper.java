@@ -7,59 +7,58 @@ import com.github.javafaker.Faker;
  */
 public class TestDataHelper {
 
-    private static final Faker faker = new Faker();
     /**
-     * Константы запросов UserRequest
+     * Экземпляр для Faker
      */
+    private static final Faker faker = new Faker();
 
-    public static final String REQUEST_USER_CREATE_POST = "index.php?rest_route=/wp/v2/users"; //
-    public static final String REQUEST_USER_GET = "index.php?rest_route=/wp/v2/users/"; // чтение конкретного юзера <id>
-    public static final String REQUEST_USER_LIST_GET = "index.php?rest_route=wp/v2/users"; // чтение списка юзеров
-    public static final String REQUEST_USER_UPDATE_POST = "index.php?rest_route=/wp/v2/users/"; // обновление данных
-    public static final String REQUEST_USER_DELETE = "index.php?rest_route=/wp/v2/users/"; // удаление пользователя
-
-
+    /**
+     * Идентификаторы
+     */
     public static final String EMAIL = "[a-z]{10}\\@[a-z]{5}\\.[a-z]{2}";
+    public static final String SLUG = "[a-z]{8}-[a-z]{6}-[a-z]{4}";
     public static final int REASSIGN = 1;
     public static final boolean FORCE = true;
-
-    public static final int STATUS_CODE_CREATED = 201;
-
-    /**
-     * Статус код успешного выполнения запроса GET
-     */
-    public static final int STATUS_CODE_OK = 200;
-
-
-    /**
-     * Идентификатор verified
-     */
     public static final boolean DELETE_STATUS = true;
 
+    /**
+     * Статусы выполнения запросов
+     */
+    public static final int STATUS_CODE_CREATED = 201;
+    public static final int STATUS_CODE_OK = 200;
 
     /**
-     * Метода генерации случайного email
+     * Методы генерации случайных данных
      *
-     * @return случайный email
+     * @return сгенерированный
      */
     public static String getRandomEmail() {
         return faker.regexify(EMAIL);
     }
-
-    /**
-     * Метода генерации случайного имени
-     *
-     * @return случайное имя
-     */
     public static String getRandomUserName() {
         return faker.name().username();
     }
-    
-    /**
-     * Метода генерации случайного пароля
-     *
-     * @return случайный пароль
-     */
+    public static String getRandomDisplayName() {
+        return faker.name().nameWithMiddle();
+    }
+    public static String getRandomFirstName() {
+        return faker.name().lastName();
+    }
+    public static String getRandomLastname() {
+        return faker.name().firstName();
+    }
+    public static String getRandomUrl() {
+        return faker.internet().url();
+    }
+    public static String getRandomDescription() {
+        return faker.lorem().sentence(2, 4);
+    }
+    public static String getRandomNickName() {
+        return faker.funnyName().name();
+    }
+    public static String getRandomSlug() {
+        return faker.regexify(SLUG);
+    }
     public static String getRandomPassword() {
         return faker.internet().password();
     }

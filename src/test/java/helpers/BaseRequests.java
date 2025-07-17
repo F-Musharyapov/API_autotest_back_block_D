@@ -1,22 +1,22 @@
 package helpers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import config.BaseConfig;
 import io.qameta.allure.Description;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.config.ObjectMapperConfig;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import org.aeonbits.owner.ConfigFactory;
 
 import java.io.IOException;
-
-import static helpers.TestDataHelper.*;
-import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.preemptive;
 
 
 /**
- * Базовый тестовый класс с общими настройками
+ * Базовый тестовый класс с общими настройками для запросов REST API
  */
 public class BaseRequests {
 
@@ -24,6 +24,17 @@ public class BaseRequests {
      * Экземпляр интерфейса с конфигурацией
      */
     private static final BaseConfig config = ConfigFactory.create(BaseConfig.class, System.getenv());
+
+    static {
+        // Настройка ObjectMapper для поддержки Java 8 Time API
+        RestAssured.config = RestAssured.config()
+                .objectMapperConfig(new ObjectMapperConfig()
+                        .jackson2ObjectMapperFactory((cls, charset) -> {
+                            ObjectMapper mapper = new ObjectMapper();
+                            mapper.registerModule(new JavaTimeModule());
+                            return mapper;
+                        }));
+    }
 
     /**
      * Метод для получения спецификации RestAssured
@@ -43,20 +54,5 @@ public class BaseRequests {
         ;
         RequestSpecification requestSpecification;
         return requestSpecification = requestSpecBuilder.build();
-    }
-
-    /**
-     * Удаление пользователя с заданным ID
-     *
-     * @param userID ID пользователя, которого необходимо удалить
-     */
-    @Description("Дефолтный метод для удаления данных из базы в конце тестов")
-    public static void deleteUserById(String userID) {
-
-        given()
-                .when()
-                .delete(REQUEST_USER_DELETE + userID)
-                .then()
-                .statusCode(STATUS_CODE_OK);
     }
 }

@@ -1,16 +1,19 @@
 package tests;
 
+import config.BaseConfig;
 import database.SqlConnector;
 import database.SqlSteps;
 import database.model.UserModelBD;
+import helpers.AssertHelper;
 import helpers.BaseRequests;
-import io.qameta.allure.Description;
 import io.restassured.specification.RequestSpecification;
+import org.aeonbits.owner.ConfigFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import pojo.UsersCreateRequest;
+import pojo.users.UsersCreateRequest;
+import pojo.users.UsersCreateResponse;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -18,12 +21,16 @@ import java.sql.SQLException;
 
 import static helpers.TestDataHelper.*;
 import static io.restassured.RestAssured.given;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
- * Класс тестирования POST-запроса
+ * Класс тестирования создания сущности User
  */
 public class CreateUserTest {
+
+    /**
+     * Экземпляра конфигурации
+     */
+    private static final BaseConfig config = ConfigFactory.create(BaseConfig.class, System.getenv());
 
     /**
      * Экземпляр спецификации RestAssured
@@ -49,16 +56,14 @@ public class CreateUserTest {
      * Переменная для хранения объекта pojo при post запросе
      */
     private UsersCreateRequest usersCreateRequest;
+    private UsersCreateResponse usersCreateResponse;
+
 
     /**
-     * Переменная для хранения user ID
-     */
-    private String userID;
-
-    /**
-     * Метод инициализации спецификации запроса
+     * Метод инициализации спецификации запроса и создания пользователя
      *
-     * @throws IOException если не удается инициализировать спецификацию запроса
+     * @throws IOException  если не удается инициализировать спецификацию запроса
+     * @throws SQLException если не удается инициализировать БД
      */
     @BeforeEach
     public void setup() throws IOException, SQLException {
@@ -69,37 +74,37 @@ public class CreateUserTest {
     }
 
     @Test
-    @Description("Тестовый метод для создания юзера и сравнения отправленных данных с полученными")
+    @DisplayName("Тестовый метод для создания юзера и сравнения отправленных данных с полученными")
     public void createUserTest() {
 
         usersCreateRequest = UsersCreateRequest.builder()
                 .username(getRandomUserName())
+                .name(getRandomDisplayName())
+                .first_name(getRandomFirstName())
+                .last_name(getRandomLastname())
                 .email(getRandomEmail())
+                .url(getRandomUrl())
+                .description(getRandomDescription())
+                .nickname(getRandomNickName())
+                .slug(getRandomSlug())
                 .password(getRandomPassword())
                 .build();
 
-        userID = given()
+        usersCreateResponse = given()
                 .spec(requestSpecification)
                 .body(usersCreateRequest)
                 .when()
-                .post(REQUEST_USER_CREATE_POST)
+                .post(config.createUserEndpoint())
                 .then()
                 .statusCode(STATUS_CODE_CREATED)
-                .extract()
-                .path("id").toString();
+                .extract().as(UsersCreateResponse.class);
 
-        // Проверка данных в БД
         UserModelBD userBD = null;
         try {
-            userBD = sqlSteps.getUsersModelBD(Integer.parseInt(userID));
-            // посмотреть перед сравнением
-            System.out.println("Ожидаемый LOGIN: " + usersCreateRequest.getUsername());
-            System.out.println("Фактический LOGIN из БД: " + userBD.getUser_login());
+            userBD = sqlSteps.getUsersModelBD(Integer.parseInt(usersCreateResponse.getId()));
 
-            // Проверяем соответствие данных
-            assertEquals(userBD.getUser_login(), usersCreateRequest.getUsername(),
-                    "LOGIN пользователя в БД не соответствует отправленным данным");
-            System.out.println("Сравнение LOGIN прошло успешно!");
+            AssertHelper.assertObjectsEqual(usersCreateResponse, userBD);
+            System.out.println("Сравнение usersCreateResponse и userBD прошло успешно!");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -107,17 +112,17 @@ public class CreateUserTest {
     }
 
     /**
-     * Метод удаления соданного user из базы после всех запросов
+     * Метод удаления соданного user из БД после завершения тестов и отключение от БД
      */
     @AfterEach
-    @DisplayName("Удаление User из базы")
+    @DisplayName("Удаление User и отключение от БД")
     public void deleteUserInDataBase() {
-        System.out.print(userID);
         try {
-            sqlSteps.deleteUser(userID);
+            sqlSteps.deleteUser(usersCreateResponse.getId());
         } catch (Exception e) {
             e.printStackTrace();
         }
+        sqlConnector.closeConnection(connection);
     }
 }
 

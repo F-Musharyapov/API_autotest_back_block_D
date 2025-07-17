@@ -56,4 +56,40 @@ public interface BaseConfig extends Config {
      * @return пароль
      */
     String passwordDb();
+
+    /**
+     * Эндпоинт создания юзера
+     *
+     * @return эндпоинт
+     */
+    String createUserEndpoint();
+
+    /**
+     * Эндпоинт чтения юзера
+     *
+     * @return эндпоинт
+     */
+    String readUserEndpoint();
+
+    /**
+     * Эндпоинт чтения всех юзеров
+     *
+     * @return эндпоинт
+     */
+    String allUserEndpoint();
+
+    /**
+     * Эндпоинт обновления юзера
+     *
+     * @return эндпоинт
+     */
+    String updateUserEndpoint();
+
+    /**
+     * Эндпоинт удаления юзера
+     *
+     * @return эндпоинт
+     */
+    String deleteUserEndpoint();
+
 }

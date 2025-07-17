@@ -1,14 +1,18 @@
 package tests;
 
+import config.BaseConfig;
 import database.SqlConnector;
 import database.SqlSteps;
 import database.model.UserModelBD;
+import helpers.AssertHelper;
 import helpers.BaseRequests;
-import io.qameta.allure.Description;
 import io.restassured.specification.RequestSpecification;
+import org.aeonbits.owner.ConfigFactory;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import pojo.*;
+import pojo.users.*;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -20,11 +24,15 @@ import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-
 /**
- * Класс тестирования POST-запроса
+ * Класс тестирования удаления сущности User
  */
 public class DeleteUserTest {
+
+    /**
+     * Экземпляра конфигурации
+     */
+    private static final BaseConfig config = ConfigFactory.create(BaseConfig.class, System.getenv());
 
     /**
      * Экземпляр спецификации RestAssured
@@ -53,19 +61,11 @@ public class DeleteUserTest {
      */
     private UsersCreateRequest usersCreateRequest;
     private UsersCreateResponse usersCreateResponse;
-    private UsersUpdateRequest usersUpdateRequest;
-    private UsersUpdateResponse usersUpdateResponse;
-    private UsersDeleteResponse usersDeleteResponse;
-    private UsersDeleteRequest usersDeleteRequest;
-
+    //private UsersDeleteResponse usersDeleteResponse;
+    //private UsersDeleteRequest usersDeleteRequest;
 
     /**
-     * Переменная для хранения user ID
-     */
-    private String userID;
-
-    /**
-     * Метод инициализации спецификации запроса и создания пользователя
+     * Метод инициализации спецификации запроса
      *
      * @throws IOException если не удается инициализировать спецификацию запроса
      */
@@ -75,26 +75,39 @@ public class DeleteUserTest {
         sqlConnector = new SqlConnector();
         connection = sqlConnector.openConnection();
         sqlSteps = new SqlSteps(connection);
+    }
+
+    /**
+     * Создание пользователя перед тестом удаления
+     */
+    @BeforeEach
+    public void createUserTest() {
 
         usersCreateRequest = UsersCreateRequest.builder()
                 .username(getRandomUserName())
+                .name(getRandomDisplayName())
+                .first_name(getRandomFirstName())
+                .last_name(getRandomLastname())
                 .email(getRandomEmail())
+                .url(getRandomUrl())
+                .description(getRandomDescription())
+                .nickname(getRandomNickName())
+                .slug(getRandomSlug())
                 .password(getRandomPassword())
                 .build();
 
-        userID = given()
+        usersCreateResponse = given()
                 .spec(requestSpecification)
                 .body(usersCreateRequest)
                 .when()
-                .post(REQUEST_USER_CREATE_POST)
+                .post(config.createUserEndpoint())
                 .then()
                 .statusCode(STATUS_CODE_CREATED)
-                .extract()
-                .path("id").toString();
+                .extract().as(UsersCreateResponse.class);
     }
 
     @Test
-    @Description("Тестовый метод для удаления юзера и проверки в БД")
+    @DisplayName("Тестовый метод для удаления юзера и проверки в БД")
     public void userDelete() {
 
         UsersDeleteRequest usersDeleteRequest = UsersDeleteRequest.builder()
@@ -106,19 +119,24 @@ public class DeleteUserTest {
                 .spec(requestSpecification)
                 .body(usersDeleteRequest)
                 .when()
-                .delete(REQUEST_USER_DELETE + userID)
+                .delete(config.deleteUserEndpoint() + usersCreateResponse.getId())
                 .then()
                 .statusCode(STATUS_CODE_OK)
                 .extract().as(UsersDeleteResponse.class);
 
-        assertEquals(DELETE_STATUS, usersDeleteResponse.getDeleted(),
-                "DELETE_STATUS пользователя в БД не true");
 
-        UserModelBD userBD = sqlSteps.getUsersModelBD(Integer.parseInt(userID));
-        assertThat(userBD)
-                .withFailMessage("Пользователь не удалился из БД, тест не пройден")
-                .isNull();
+        UserModelBD userBD = sqlSteps.getUsersModelBD(Integer.parseInt(usersCreateResponse.getId()));
+        AssertHelper.assertUserDeleted(usersDeleteResponse.getDeleted(), userBD);
 
+    }
+
+    /**
+     * Метод отключение от БД
+     */
+    @AfterEach
+    @DisplayName("Отключение от базы данных")
+    public void deleteUserСloseConnection() {
+        sqlConnector.closeConnection(connection);
     }
 }
 

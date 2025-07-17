@@ -1,19 +1,21 @@
 package tests;
 
+import config.BaseConfig;
 import database.SqlConnector;
 import database.SqlSteps;
 import database.model.UserModelBD;
+import helpers.AssertHelper;
 import helpers.BaseRequests;
-import io.qameta.allure.Description;
 import io.restassured.specification.RequestSpecification;
+import org.aeonbits.owner.ConfigFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import pojo.UsersUpdateRequest;
-import pojo.UsersUpdateResponse;
-import pojo.UsersCreateRequest;
-import pojo.UsersCreateResponse;
+import pojo.users.UsersCreateRequest;
+import pojo.users.UsersCreateResponse;
+import pojo.users.UsersUpdateRequest;
+import pojo.users.UsersUpdateResponse;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -24,9 +26,14 @@ import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
- * Класс тестирования POST-запроса
+ * Класс тестирования обновления сущности User
  */
 public class UpdateUserTest {
+
+    /**
+     * Экземпляра конфигурации
+     */
+    private static final BaseConfig config = ConfigFactory.create(BaseConfig.class, System.getenv());
 
     /**
      * Экземпляр спецификации RestAssured
@@ -53,7 +60,6 @@ public class UpdateUserTest {
      */
     private UsersCreateRequest usersCreateRequest;
     private UsersCreateResponse usersCreateResponse;
-
     private UsersUpdateRequest usersUpdateRequest;
     private UsersUpdateResponse usersUpdateResponse;
 
@@ -84,69 +90,63 @@ public class UpdateUserTest {
 
         usersCreateRequest = UsersCreateRequest.builder()
                 .username(getRandomUserName())
+                .name(getRandomDisplayName())
+                .first_name(getRandomFirstName())
+                .last_name(getRandomLastname())
                 .email(getRandomEmail())
+                .url(getRandomUrl())
+                .description(getRandomDescription())
+                .nickname(getRandomNickName())
+                .slug(getRandomSlug())
                 .password(getRandomPassword())
                 .build();
 
-        userID = given()
+        usersCreateResponse = given()
                 .spec(requestSpecification)
                 .body(usersCreateRequest)
                 .when()
-                .post(REQUEST_USER_CREATE_POST)
+                .post(config.createUserEndpoint())
                 .then()
                 .statusCode(STATUS_CODE_CREATED)
-                .extract()
-                .path("id").toString();
-        /*
-        given()
-                .when()
-                .get(REQUEST_USER_GET + userID)
-                .then()
-                .statusCode(STATUS_CODE_OK);
-                //.extract().as(UsersRequest.class);
-
-         */
+                .extract().as(UsersCreateResponse.class);
     }
 
     @Test
-    @Description("Тестовый метод для обновления юзера, сравнения данных в запросе и в БД")
+    @DisplayName("Тестовый метод для обновления юзера, сравнения данных в запросе и в БД")
     public void userUpdate() {
 
         usersUpdateRequest = UsersUpdateRequest.builder()
+                //.username(getRandomUserName())
+                .name(getRandomDisplayName())
+                .first_name(getRandomFirstName())
+                .last_name(getRandomLastname())
                 .email(getRandomEmail())
+                .url(getRandomUrl())
+                .description(getRandomDescription())
+                .nickname(getRandomNickName())
+                .slug(getRandomSlug())
+                .password(getRandomPassword())
                 .build();
 
         usersUpdateResponse = given()
                 .spec(requestSpecification)
                 .body(usersUpdateRequest)
                 .when()
-                .post(REQUEST_USER_UPDATE_POST + userID)
+                .post(config.updateUserEndpoint() + usersCreateResponse.getId())
                 .then()
                 .statusCode(STATUS_CODE_OK)
                 //.extract();
                 .extract().as(UsersUpdateResponse.class);
-        /*
-        UsersCreateResponse usersPojoResponse = given()
-                .spec(requestSpecification)
-                .when()
-                .get(REQUEST_USER_GET + userID)
-                .then()
-                .statusCode(STATUS_CODE_OK)
-                .extract().as(UsersCreateResponse.class);
 
-         */
-
-        // Проверка данных в БД
         UserModelBD userBD = null;
         try {
-            userBD = sqlSteps.getUsersModelBD(Integer.parseInt(userID));
-            // Вывод значения посмотреть перед сравнением
-            System.out.println("Ожидаемый LOGIN: " + usersUpdateResponse.getEmail());
-            System.out.println("Фактический LOGIN из БД: " + userBD.getUser_email());
+            userBD = sqlSteps.getUsersModelBD(Integer.parseInt(usersUpdateResponse.getId()));
+            System.out.print("Вывод объекта " + usersCreateResponse);
+            System.out.print("Вывод объекта " + usersUpdateResponse);
+            System.out.print("Вывод объекта " + userBD);
 
-            assertEquals(userBD.getUser_email(), usersUpdateResponse.getEmail(),
-                    "LOGIN пользователя в БД не соответствует отправленным данным");
-            System.out.println("Сравнение LOGIN прошло успешно!");
+            AssertHelper.assertObjectsEqual(usersUpdateResponse, userBD);
+            System.out.println("Сравнение usersUpdateResponse и userBD прошло успешно!");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -154,17 +154,17 @@ public class UpdateUserTest {
     }
 
     /**
-     * Метод удаления соданного user из базы после всех запросов
+     * Метод удаления соданного user из БД после завершения тестов и отключение от БД
      */
     @AfterEach
-    @DisplayName("Удаление User из базы")
+    @DisplayName("Удаление User и отключение от БД")
     public void deleteUserInDataBase() {
-        System.out.print(userID);
         try {
-            sqlSteps.deleteUser(userID);
+            sqlSteps.deleteUser(usersUpdateResponse.getId());
         } catch (Exception e) {
             e.printStackTrace();
         }
+        sqlConnector.closeConnection(connection);
     }
 }
 
