@@ -1,12 +1,12 @@
-package tests;
+package tests.users;
 
 import config.BaseConfig;
-import database.SqlConnector;
 import database.SqlSteps;
 import database.model.UserModelBD;
 import helpers.AssertHelper;
 import helpers.BaseRequests;
 import io.restassured.specification.RequestSpecification;
+import lombok.SneakyThrows;
 import org.aeonbits.owner.ConfigFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,11 +18,9 @@ import pojo.users.UsersReadResponse;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.SQLException;
 
 import static helpers.TestDataHelper.*;
 import static io.restassured.RestAssured.given;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Класс тестирования просмотра сущности User
@@ -40,47 +38,35 @@ public class ReadUserTest {
     private RequestSpecification requestSpecification;
 
     /**
-     * Экземпляр класса для работы с БД
-     */
-    private SqlSteps sqlSteps;
-
-    /**
-     * Экземпляр класса для подключения к БД
-     */
-    private SqlConnector sqlConnector;
-
-    /**
-     * Экземпляр интерфейса для соединения с mySQL
-     */
-    private Connection connection;
-
-    /**
-     * Переменная для хранения объекта pojo при post запросе
+     * Переменная для хранения данных объекта UsersCreateRequest
      */
     private UsersCreateRequest usersCreateRequest;
 
+    /**
+     * Переменная для хранения данных объекта UsersCreateResponse
+     */
     private UsersCreateResponse usersCreateResponse;
 
+    /**
+     * Переменная для хранения данных объекта UsersReadResponse
+     */
     private UsersReadResponse usersReadResponse;
 
     /**
      * Метод инициализации спецификации запроса
      *
-     * @throws IOException если не удается инициализировать спецификацию запроса
+     * @throws IOException Обработка ошибок при инициализации спецификацию запроса BaseRequests.initRequestSpecification()
      */
     @BeforeEach
-    public void setup() throws IOException, SQLException {
+    public void setup() throws IOException {
         requestSpecification = BaseRequests.initRequestSpecification();
-        sqlConnector = new SqlConnector();
-        connection = sqlConnector.openConnection();
-        sqlSteps = new SqlSteps(connection);
     }
 
     /**
-     * Метод создания юзера перед тестом
+     * Метод создания сущности user перед тестом
      */
     @BeforeEach
-    public void createUserTest() {
+    public void createUser() {
 
         usersCreateRequest = UsersCreateRequest.builder()
                 .username(getRandomUserName())
@@ -105,9 +91,10 @@ public class ReadUserTest {
                 .extract().as(UsersCreateResponse.class);
     }
 
+    @SneakyThrows
     @Test
     @DisplayName("Тестовый метод для сравнения данных в запросе и в БД")
-    public void getUserTest() {
+    public void userReadTest() {
 
         usersReadResponse = given()
                 .spec(requestSpecification)
@@ -117,32 +104,24 @@ public class ReadUserTest {
                 .statusCode(STATUS_CODE_OK)
                 .extract().as(UsersReadResponse.class);
 
-        // Проверка данных в БД
-        UserModelBD userBD = null;
-        try {
-            userBD = sqlSteps.getUsersModelBD(Integer.parseInt(usersReadResponse.getId()));
-            System.out.print("Вывод объекта " + usersReadResponse);
-            System.out.print("Вывод объекта " + userBD);
+        Connection connection = SqlSteps.getConnection();
+        UserModelBD userBD = new SqlSteps(connection).getUsersModelBD(Integer.parseInt(usersReadResponse.getId()));
+        connection.close();
 
-            AssertHelper.assertUserFieldsEqual(usersReadResponse,userBD);
-            System.out.println("Сравнение usersReadResponse и userBD прошло успешно!");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        AssertHelper.assertUserFieldsEqual(usersReadResponse, userBD);
     }
 
     /**
-     * Метод удаления соданного user из БД после завершения тестов и отключение от БД
+     * Метод удаления соданного user из БД после завершения тестов
      */
+    @SneakyThrows
     @AfterEach
-    @DisplayName("Удаление User и отключение от БД")
+    @DisplayName("Удаление User после завершения тестов")
     public void deleteUserInDataBase() {
-        System.out.print("Проверка ID---" + usersReadResponse.getId() + "----");
-        try {
-            sqlSteps.deleteUser(usersReadResponse.getId());
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (usersCreateResponse != null) {
+            Connection connection = SqlSteps.getConnection();
+            new SqlSteps(connection).deleteUser(usersCreateResponse.getId());
+            connection.close();
         }
-        sqlConnector.closeConnection(connection);
     }
 }

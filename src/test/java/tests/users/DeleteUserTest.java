@@ -1,28 +1,26 @@
-package tests;
+package tests.users;
 
 import config.BaseConfig;
-import database.SqlConnector;
 import database.SqlSteps;
 import database.model.UserModelBD;
 import helpers.AssertHelper;
 import helpers.BaseRequests;
 import io.restassured.specification.RequestSpecification;
+import lombok.SneakyThrows;
 import org.aeonbits.owner.ConfigFactory;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import pojo.users.*;
+import pojo.users.UsersCreateRequest;
+import pojo.users.UsersCreateResponse;
+import pojo.users.UsersDeleteRequest;
+import pojo.users.UsersDeleteResponse;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.SQLException;
-
 
 import static helpers.TestDataHelper.*;
 import static io.restassured.RestAssured.given;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Класс тестирования удаления сущности User
@@ -40,48 +38,30 @@ public class DeleteUserTest {
     private RequestSpecification requestSpecification;
 
     /**
-     * Экземпляр класса для работы с БД
-     */
-    private SqlSteps sqlSteps;
-
-    /**
-     * Экземпляр класса для подключения к БД
-     */
-    private SqlConnector sqlConnector;
-
-    /**
-     * Экземпляр интерфейса для соединения с mySQL
-     */
-    private Connection connection;
-
-    private UserModelBD userBD;
-
-    /**
-     * Переменная для хранения объекта pojo при создании пользователя
+     * Переменная для хранения данных объекта UsersCreateRequest
      */
     private UsersCreateRequest usersCreateRequest;
+
+    /**
+     * Переменная для хранения данных объекта UsersCreateResponse
+     */
     private UsersCreateResponse usersCreateResponse;
-    //private UsersDeleteResponse usersDeleteResponse;
-    //private UsersDeleteRequest usersDeleteRequest;
 
     /**
      * Метод инициализации спецификации запроса
      *
-     * @throws IOException если не удается инициализировать спецификацию запроса
+     * @throws IOException Обработка ошибок при инициализации спецификацию запроса BaseRequests.initRequestSpecification()
      */
     @BeforeEach
-    public void setup() throws IOException, SQLException {
+    public void setup() throws IOException {
         requestSpecification = BaseRequests.initRequestSpecification();
-        sqlConnector = new SqlConnector();
-        connection = sqlConnector.openConnection();
-        sqlSteps = new SqlSteps(connection);
     }
 
     /**
-     * Создание пользователя перед тестом удаления
+     * Метод создания сущности user перед тестом
      */
     @BeforeEach
-    public void createUserTest() {
+    public void createUser() {
 
         usersCreateRequest = UsersCreateRequest.builder()
                 .username(getRandomUserName())
@@ -106,9 +86,10 @@ public class DeleteUserTest {
                 .extract().as(UsersCreateResponse.class);
     }
 
+    @SneakyThrows
     @Test
     @DisplayName("Тестовый метод для удаления юзера и проверки в БД")
-    public void userDelete() {
+    public void userDeleteTest() {
 
         UsersDeleteRequest usersDeleteRequest = UsersDeleteRequest.builder()
                 .reassign(REASSIGN)
@@ -124,19 +105,11 @@ public class DeleteUserTest {
                 .statusCode(STATUS_CODE_OK)
                 .extract().as(UsersDeleteResponse.class);
 
+        Connection connection = SqlSteps.getConnection();
+        UserModelBD userBD = new SqlSteps(connection).getUsersModelBD(Integer.parseInt(usersCreateResponse.getId()));
+        connection.close();
 
-        UserModelBD userBD = sqlSteps.getUsersModelBD(Integer.parseInt(usersCreateResponse.getId()));
-        AssertHelper.assertUserDeleted(usersDeleteResponse.getDeleted(), userBD);
-
-    }
-
-    /**
-     * Метод отключение от БД
-     */
-    @AfterEach
-    @DisplayName("Отключение от базы данных")
-    public void deleteUserСloseConnection() {
-        sqlConnector.closeConnection(connection);
+        AssertHelper.assertStatusUserDeleted(usersDeleteResponse.getDeleted());
+        AssertHelper.assertUserDeletedBD(userBD);
     }
 }
-

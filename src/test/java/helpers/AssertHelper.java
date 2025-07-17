@@ -31,12 +31,20 @@ public class AssertHelper {
                 .isEqualTo(actual);
     }
 
-    public static void assertUserDeleted(Boolean veriable, Object bdObject) {
-        // Проверка статуса удаления в ответе API
+    /**
+     * Проверка статуса удаления user
+     * @param veriable статус удаления
+     */
+    public static void assertStatusUserDeleted(Boolean veriable) {
         assertEquals(true, veriable,
                 "DELETE_STATUS пользователя должен быть true");
+    }
 
-        // Проверка что пользователь удален из БД
+    /**
+     * Проверка наличия user в БД
+     * @param bdObject ответ наличия user в БД
+     */
+    public static void assertUserDeletedBD(Object bdObject) {
         assertThat(bdObject)
                 .withFailMessage("Пользователь не удалился из БД")
                 .isNull();

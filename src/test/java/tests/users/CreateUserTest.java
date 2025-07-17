@@ -1,12 +1,12 @@
-package tests;
+package tests.users;
 
 import config.BaseConfig;
-import database.SqlConnector;
 import database.SqlSteps;
 import database.model.UserModelBD;
 import helpers.AssertHelper;
 import helpers.BaseRequests;
 import io.restassured.specification.RequestSpecification;
+import lombok.SneakyThrows;
 import org.aeonbits.owner.ConfigFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,7 +17,6 @@ import pojo.users.UsersCreateResponse;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.SQLException;
 
 import static helpers.TestDataHelper.*;
 import static io.restassured.RestAssured.given;
@@ -38,44 +37,29 @@ public class CreateUserTest {
     private RequestSpecification requestSpecification;
 
     /**
-     * Экземпляр класса для работы с БД
-     */
-    private SqlSteps sqlSteps;
-
-    /**
-     * Экземпляр класса для подключения к БД
-     */
-    private SqlConnector sqlConnector;
-
-    /**
-     * Экземпляр интерфейса для соединения с mySQL
-     */
-    private Connection connection;
-
-    /**
-     * Переменная для хранения объекта pojo при post запросе
+     * Переменная для хранения данных объекта UsersCreateRequest
      */
     private UsersCreateRequest usersCreateRequest;
-    private UsersCreateResponse usersCreateResponse;
-
 
     /**
-     * Метод инициализации спецификации запроса и создания пользователя
+     * Переменная для хранения данных объекта UsersCreateResponse
+     */
+    private UsersCreateResponse usersCreateResponse;
+
+    /**
+     * Метод инициализации спецификации запроса
      *
-     * @throws IOException  если не удается инициализировать спецификацию запроса
-     * @throws SQLException если не удается инициализировать БД
+     * @throws IOException Обработка ошибок при инициализации спецификацию запроса BaseRequests.initRequestSpecification()
      */
     @BeforeEach
-    public void setup() throws IOException, SQLException {
+    public void setup() throws IOException {
         requestSpecification = BaseRequests.initRequestSpecification();
-        sqlConnector = new SqlConnector();
-        connection = sqlConnector.openConnection();
-        sqlSteps = new SqlSteps(connection);
     }
 
+    @SneakyThrows
     @Test
-    @DisplayName("Тестовый метод для создания юзера и сравнения отправленных данных с полученными")
-    public void createUserTest() {
+    @DisplayName("Тестовый метод для создания сущности user и сравнения отправленных данных с полученными")
+    public void userCreateTest() {
 
         usersCreateRequest = UsersCreateRequest.builder()
                 .username(getRandomUserName())
@@ -99,30 +83,25 @@ public class CreateUserTest {
                 .statusCode(STATUS_CODE_CREATED)
                 .extract().as(UsersCreateResponse.class);
 
-        UserModelBD userBD = null;
-        try {
-            userBD = sqlSteps.getUsersModelBD(Integer.parseInt(usersCreateResponse.getId()));
+        Connection connection = SqlSteps.getConnection();
+        UserModelBD userBD = new SqlSteps(connection).getUsersModelBD(Integer.parseInt(usersCreateResponse.getId()));
+        connection.close();
 
-            AssertHelper.assertObjectsEqual(usersCreateResponse, userBD);
-            System.out.println("Сравнение usersCreateResponse и userBD прошло успешно!");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+        AssertHelper.assertObjectsEqual(usersCreateResponse, userBD);
     }
 
     /**
-     * Метод удаления соданного user из БД после завершения тестов и отключение от БД
+     * Метод удаления соданного user из БД после завершения тестов
      */
+    @SneakyThrows
     @AfterEach
-    @DisplayName("Удаление User и отключение от БД")
+    @DisplayName("Удаление User после завершения тестов")
     public void deleteUserInDataBase() {
-        try {
-            sqlSteps.deleteUser(usersCreateResponse.getId());
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (usersCreateResponse != null) {
+            Connection connection = SqlSteps.getConnection();
+            new SqlSteps(connection).deleteUser(usersCreateResponse.getId());
+            connection.close();
         }
-        sqlConnector.closeConnection(connection);
     }
 }
 

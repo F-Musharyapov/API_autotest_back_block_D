@@ -1,15 +1,13 @@
 package database;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import config.BaseConfig;
 import database.model.UserModelBD;
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
+import org.aeonbits.owner.ConfigFactory;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.ResultSet;
+import java.sql.*;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 
 /**
  * Метод для взаимодействия с БД
@@ -40,11 +38,23 @@ public class SqlSteps {
     //private static final String SELECT_BY_ID_SQL_REQUEST = "SELECT * FROM wp_users WHERE %s = %d";
     private static final String SELECT_BY_ID_SQL_REQUEST = "SELECT u.ID, u.user_nicename, u.user_login, u.user_email, u.user_url, u.user_registered, u.user_status, u.display_name, MAX(CASE WHEN um.meta_key = 'nickname' THEN um.meta_value END) AS nickname, MAX(CASE WHEN um.meta_key = 'first_name' THEN um.meta_value END) AS first_name, MAX(CASE WHEN um.meta_key = 'last_name' THEN um.meta_value END) AS last_name, MAX(CASE WHEN um.meta_key = 'description' THEN um.meta_value END) AS description, MAX(CASE WHEN um.meta_key = 'rich_editing' THEN um.meta_value END) AS rich_editing, MAX(CASE WHEN um.meta_key = 'wp_capabilities' THEN um.meta_value END) AS capabilities, MAX(CASE WHEN um.meta_key = 'wp_user_level' THEN um.meta_value END) AS user_level FROM wp_users u LEFT JOIN wp_usermeta um ON u.ID = um.user_id WHERE u.%s = %s GROUP BY u.ID, u.user_login, u.user_email, u.user_registered, u.user_status, u.display_name";
 
+    /**
+     * Экземпляра конфигурации
+     */
+    private static final BaseConfig config = ConfigFactory.create(BaseConfig.class, System.getenv());
+
+    private final Connection connection;
 
     /**
-     * Переменная с подключением к БД
+     * Метод открытия подключения к базе данных с использованием try-with-resources
+     *
+     * @return экземпляр подключения
      */
-    private final Connection connection;
+    @SneakyThrows
+    public static Connection getConnection() {
+        Class.forName(config.driverDb());
+        return DriverManager.getConnection(config.urlDb(), config.userDb(), config.passwordDb());
+    }
 
     /**
      * Метод удаления user в БД
@@ -52,9 +62,9 @@ public class SqlSteps {
      * @param id идентификатор поля, которое удаляем
      */
     public void deleteUser(String id) {
-        try (Statement stmt = connection.createStatement()) {
-            stmt.executeUpdate(String.format(DELETE_SQL_REQUEST, ID_FIELD, id)
-            );
+        try (Connection connection = getConnection();
+             Statement stmt = connection.createStatement()) {
+            stmt.executeUpdate(String.format(DELETE_SQL_REQUEST, ID_FIELD, id));
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -66,7 +76,8 @@ public class SqlSteps {
      * @param id идентификатор поля, которое удаляем
      */
     public UserModelBD getUsersModelBD(int id) {
-        try (Statement stmt = connection.createStatement()) {
+        try (Connection connection = getConnection();
+             Statement stmt = connection.createStatement()) {
             ResultSet result = stmt.executeQuery(String.format(SELECT_BY_ID_SQL_REQUEST, ID_FIELD, id));
             if (result.next()) {
                 UserModelBD userBD = UserModelBD.builder()
@@ -81,17 +92,6 @@ public class SqlSteps {
                         .registered_date(result.getObject(DATE_FIELD, LocalDateTime.class))
                         .name(result.getString(DISPLAY_NAME_FIELD))
                         .url(result.getString(URL_FIELD))
-                        //id(result.getInt(ID_FIELD))
-                        //                        .user_login(result.getString(LOGIN_FIELD))
-                        //                        .user_nicename(result.getString(NICENAME_FIELD))
-                        //                        .user_email(result.getString(EMAIL_FIELD))
-                        //                        .nickname(result.getString(NICKNAME_FIELD))
-                        //                        .first_name(result.getString(FIRST_NAME_FIELD))
-                        //                        .last_name(result.getString(LAST_NAME_FIELD))
-                        //                        .description(result.getString(DESCRIPTION_FIELD))
-                        //                        .user_registered(result.getObject(DATE_FIELD, LocalDateTime.class))
-                        //                        .display_name(result.getString(DISPLAY_NAME_FIELD))
-                        //                        .user_url(result.getString(URL_FIELD))
                         .build();
                 return userBD;
             }
@@ -102,16 +102,3 @@ public class SqlSteps {
     }
 
 }
-        /*
-         private final int id;//
-    private final String user_login; //username
-    private final String user_nicename; //slug
-    private final String user_email;//
-    private final String nickname;//
-    private final String first_name;//
-    private final String last_name;//
-    private final String description;//
-    private final String user_registered;//
-    private final String display_name; //name
-    private final String user_url;//
-         */
