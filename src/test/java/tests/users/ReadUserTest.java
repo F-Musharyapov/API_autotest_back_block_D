@@ -1,7 +1,7 @@
 package tests.users;
 
 import config.BaseConfig;
-import database.SqlSteps;
+import database.UsersSqlSteps;
 import database.model.UserModelBD;
 import helpers.AssertHelper;
 import helpers.BaseRequests;
@@ -23,7 +23,7 @@ import static helpers.TestDataHelper.*;
 import static io.restassured.RestAssured.given;
 
 /**
- * Класс тестирования просмотра сущности User
+ * Класс тестирования API запроса чтения данных сущности User
  */
 public class ReadUserTest {
 
@@ -53,32 +53,32 @@ public class ReadUserTest {
     private UsersReadResponse usersReadResponse;
 
     /**
-     * Метод инициализации спецификации запроса
+     * Метод инициализации спецификации запроса и запуск метода createUser
      *
      * @throws IOException Обработка ошибок при инициализации спецификацию запроса BaseRequests.initRequestSpecification()
      */
     @BeforeEach
     public void setup() throws IOException {
         requestSpecification = BaseRequests.initRequestSpecification();
+        createUser();
     }
 
     /**
      * Метод создания сущности user перед тестом
      */
-    @BeforeEach
     public void createUser() {
 
         usersCreateRequest = UsersCreateRequest.builder()
-                .username(getRandomUserName())
-                .name(getRandomDisplayName())
-                .first_name(getRandomFirstName())
-                .last_name(getRandomLastname())
-                .email(getRandomEmail())
-                .url(getRandomUrl())
-                .description(getRandomDescription())
-                .nickname(getRandomNickName())
-                .slug(getRandomSlug())
-                .password(getRandomPassword())
+                .username(getUserRandomUserName())
+                .name(getUserRandomDisplayName())
+                .first_name(getUserRandomFirstName())
+                .last_name(getUserRandomLastname())
+                .email(getUserRandomEmail())
+                .url(getUserRandomUrl())
+                .description(getUserRandomDescription())
+                .nickname(getUserRandomNickName())
+                .slug(getUserRandomSlug())
+                .password(getUserRandomPassword())
                 .build();
 
         usersCreateResponse = given()
@@ -93,7 +93,7 @@ public class ReadUserTest {
 
     @SneakyThrows
     @Test
-    @DisplayName("Тестовый метод для сравнения данных в запросе и в БД")
+    @DisplayName("Тестовый метод для проверки запроса чтения, сравнение данных в запросе и в БД")
     public void userReadTest() {
 
         usersReadResponse = given()
@@ -104,8 +104,8 @@ public class ReadUserTest {
                 .statusCode(STATUS_CODE_OK)
                 .extract().as(UsersReadResponse.class);
 
-        Connection connection = SqlSteps.getConnection();
-        UserModelBD userBD = new SqlSteps(connection).getUsersModelBD(Integer.parseInt(usersReadResponse.getId()));
+        Connection connection = UsersSqlSteps.getConnection();
+        UserModelBD userBD = new UsersSqlSteps(connection).getUsersModelBD(Integer.parseInt(usersReadResponse.getId()));
         connection.close();
 
         AssertHelper.assertUserFieldsEqual(usersReadResponse, userBD);
@@ -119,8 +119,8 @@ public class ReadUserTest {
     @DisplayName("Удаление User после завершения тестов")
     public void deleteUserInDataBase() {
         if (usersCreateResponse != null) {
-            Connection connection = SqlSteps.getConnection();
-            new SqlSteps(connection).deleteUser(usersCreateResponse.getId());
+            Connection connection = UsersSqlSteps.getConnection();
+            new UsersSqlSteps(connection).deleteUser(usersCreateResponse.getId());
             connection.close();
         }
     }

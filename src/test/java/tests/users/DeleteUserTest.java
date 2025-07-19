@@ -1,7 +1,7 @@
 package tests.users;
 
 import config.BaseConfig;
-import database.SqlSteps;
+import database.UsersSqlSteps;
 import database.model.UserModelBD;
 import helpers.AssertHelper;
 import helpers.BaseRequests;
@@ -23,7 +23,7 @@ import static helpers.TestDataHelper.*;
 import static io.restassured.RestAssured.given;
 
 /**
- * Класс тестирования удаления сущности User
+ * Класс тестирования API запроса удаления сущности User
  */
 public class DeleteUserTest {
 
@@ -48,32 +48,32 @@ public class DeleteUserTest {
     private UsersCreateResponse usersCreateResponse;
 
     /**
-     * Метод инициализации спецификации запроса
+     * Метод инициализации спецификации запроса и запуск метода createUser
      *
      * @throws IOException Обработка ошибок при инициализации спецификацию запроса BaseRequests.initRequestSpecification()
      */
     @BeforeEach
     public void setup() throws IOException {
         requestSpecification = BaseRequests.initRequestSpecification();
+        createUser();
     }
 
     /**
      * Метод создания сущности user перед тестом
      */
-    @BeforeEach
     public void createUser() {
 
         usersCreateRequest = UsersCreateRequest.builder()
-                .username(getRandomUserName())
-                .name(getRandomDisplayName())
-                .first_name(getRandomFirstName())
-                .last_name(getRandomLastname())
-                .email(getRandomEmail())
-                .url(getRandomUrl())
-                .description(getRandomDescription())
-                .nickname(getRandomNickName())
-                .slug(getRandomSlug())
-                .password(getRandomPassword())
+                .username(getUserRandomUserName())
+                .name(getUserRandomDisplayName())
+                .first_name(getUserRandomFirstName())
+                .last_name(getUserRandomLastname())
+                .email(getUserRandomEmail())
+                .url(getUserRandomUrl())
+                .description(getUserRandomDescription())
+                .nickname(getUserRandomNickName())
+                .slug(getUserRandomSlug())
+                .password(getUserRandomPassword())
                 .build();
 
         usersCreateResponse = given()
@@ -88,12 +88,12 @@ public class DeleteUserTest {
 
     @SneakyThrows
     @Test
-    @DisplayName("Тестовый метод для удаления юзера и проверки в БД")
+    @DisplayName("Тестовый метод для удаления user, проверка в запросе api и в БД")
     public void userDeleteTest() {
 
         UsersDeleteRequest usersDeleteRequest = UsersDeleteRequest.builder()
-                .reassign(REASSIGN)
-                .force(FORCE)
+                .reassign(REASSIGN_USER)
+                .force(FORCE_USER)
                 .build();
 
         UsersDeleteResponse usersDeleteResponse = given()
@@ -105,8 +105,8 @@ public class DeleteUserTest {
                 .statusCode(STATUS_CODE_OK)
                 .extract().as(UsersDeleteResponse.class);
 
-        Connection connection = SqlSteps.getConnection();
-        UserModelBD userBD = new SqlSteps(connection).getUsersModelBD(Integer.parseInt(usersCreateResponse.getId()));
+        Connection connection = UsersSqlSteps.getConnection();
+        UserModelBD userBD = new UsersSqlSteps(connection).getUsersModelBD(Integer.parseInt(usersCreateResponse.getId()));
         connection.close();
 
         AssertHelper.assertStatusUserDeleted(usersDeleteResponse.getDeleted());

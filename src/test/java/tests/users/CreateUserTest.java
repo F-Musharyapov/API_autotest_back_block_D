@@ -1,7 +1,7 @@
 package tests.users;
 
 import config.BaseConfig;
-import database.SqlSteps;
+import database.UsersSqlSteps;
 import database.model.UserModelBD;
 import helpers.AssertHelper;
 import helpers.BaseRequests;
@@ -22,7 +22,7 @@ import static helpers.TestDataHelper.*;
 import static io.restassured.RestAssured.given;
 
 /**
- * Класс тестирования создания сущности User
+ * Класс тестирования API запроса создания сущности User
  */
 public class CreateUserTest {
 
@@ -58,20 +58,20 @@ public class CreateUserTest {
 
     @SneakyThrows
     @Test
-    @DisplayName("Тестовый метод для создания сущности user и сравнения отправленных данных с полученными")
+    @DisplayName("Тестовый метод для создания сущности user и сравнения данных в запросе api и в БД")
     public void userCreateTest() {
 
         usersCreateRequest = UsersCreateRequest.builder()
-                .username(getRandomUserName())
-                .name(getRandomDisplayName())
-                .first_name(getRandomFirstName())
-                .last_name(getRandomLastname())
-                .email(getRandomEmail())
-                .url(getRandomUrl())
-                .description(getRandomDescription())
-                .nickname(getRandomNickName())
-                .slug(getRandomSlug())
-                .password(getRandomPassword())
+                .username(getUserRandomUserName())
+                .name(getUserRandomDisplayName())
+                .first_name(getUserRandomFirstName())
+                .last_name(getUserRandomLastname())
+                .email(getUserRandomEmail())
+                .url(getUserRandomUrl())
+                .description(getUserRandomDescription())
+                .nickname(getUserRandomNickName())
+                .slug(getUserRandomSlug())
+                .password(getUserRandomPassword())
                 .build();
 
         usersCreateResponse = given()
@@ -83,8 +83,8 @@ public class CreateUserTest {
                 .statusCode(STATUS_CODE_CREATED)
                 .extract().as(UsersCreateResponse.class);
 
-        Connection connection = SqlSteps.getConnection();
-        UserModelBD userBD = new SqlSteps(connection).getUsersModelBD(Integer.parseInt(usersCreateResponse.getId()));
+        Connection connection = UsersSqlSteps.getConnection();
+        UserModelBD userBD = new UsersSqlSteps(connection).getUsersModelBD(Integer.parseInt(usersCreateResponse.getId()));
         connection.close();
 
         AssertHelper.assertObjectsEqual(usersCreateResponse, userBD);
@@ -98,8 +98,8 @@ public class CreateUserTest {
     @DisplayName("Удаление User после завершения тестов")
     public void deleteUserInDataBase() {
         if (usersCreateResponse != null) {
-            Connection connection = SqlSteps.getConnection();
-            new SqlSteps(connection).deleteUser(usersCreateResponse.getId());
+            Connection connection = UsersSqlSteps.getConnection();
+            new UsersSqlSteps(connection).deleteUser(usersCreateResponse.getId());
             connection.close();
         }
     }

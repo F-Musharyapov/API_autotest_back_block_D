@@ -10,10 +10,10 @@ import java.sql.*;
 import java.time.LocalDateTime;
 
 /**
- * Метод для взаимодействия с БД
+ * Метод для взаимодействия с БД для сущности User
  */
 @AllArgsConstructor
-public class SqlSteps {
+public class UsersSqlSteps {
 
     /**
      * Константы полей из БД
@@ -30,13 +30,12 @@ public class SqlSteps {
     private static final String DISPLAY_NAME_FIELD = "display_name";
     private static final String URL_FIELD = "user_url";
 
-
     /**
      * Константы с запросами в БД
      */
-    private static final String DELETE_SQL_REQUEST = "DELETE FROM wp_users WHERE %s = %s";
+    private static final String DELETE_SQL_REQUEST_USER = "DELETE FROM wp_users WHERE %s = %s";
     //private static final String SELECT_BY_ID_SQL_REQUEST = "SELECT * FROM wp_users WHERE %s = %d";
-    private static final String SELECT_BY_ID_SQL_REQUEST = "SELECT u.ID, u.user_nicename, u.user_login, u.user_email, u.user_url, u.user_registered, u.user_status, u.display_name, MAX(CASE WHEN um.meta_key = 'nickname' THEN um.meta_value END) AS nickname, MAX(CASE WHEN um.meta_key = 'first_name' THEN um.meta_value END) AS first_name, MAX(CASE WHEN um.meta_key = 'last_name' THEN um.meta_value END) AS last_name, MAX(CASE WHEN um.meta_key = 'description' THEN um.meta_value END) AS description, MAX(CASE WHEN um.meta_key = 'rich_editing' THEN um.meta_value END) AS rich_editing, MAX(CASE WHEN um.meta_key = 'wp_capabilities' THEN um.meta_value END) AS capabilities, MAX(CASE WHEN um.meta_key = 'wp_user_level' THEN um.meta_value END) AS user_level FROM wp_users u LEFT JOIN wp_usermeta um ON u.ID = um.user_id WHERE u.%s = %s GROUP BY u.ID, u.user_login, u.user_email, u.user_registered, u.user_status, u.display_name";
+    private static final String SELECT_BY_ID_SQL_REQUEST_USER = "SELECT u.ID, u.user_nicename, u.user_login, u.user_email, u.user_url, u.user_registered, u.user_status, u.display_name, MAX(CASE WHEN um.meta_key = 'nickname' THEN um.meta_value END) AS nickname, MAX(CASE WHEN um.meta_key = 'first_name' THEN um.meta_value END) AS first_name, MAX(CASE WHEN um.meta_key = 'last_name' THEN um.meta_value END) AS last_name, MAX(CASE WHEN um.meta_key = 'description' THEN um.meta_value END) AS description, MAX(CASE WHEN um.meta_key = 'rich_editing' THEN um.meta_value END) AS rich_editing, MAX(CASE WHEN um.meta_key = 'wp_capabilities' THEN um.meta_value END) AS capabilities, MAX(CASE WHEN um.meta_key = 'wp_user_level' THEN um.meta_value END) AS user_level FROM wp_users u LEFT JOIN wp_usermeta um ON u.ID = um.user_id WHERE u.%s = %s GROUP BY u.ID, u.user_login, u.user_email, u.user_registered, u.user_status, u.display_name";
 
     /**
      * Экземпляра конфигурации
@@ -64,7 +63,7 @@ public class SqlSteps {
     public void deleteUser(String id) {
         try (Connection connection = getConnection();
              Statement stmt = connection.createStatement()) {
-            stmt.executeUpdate(String.format(DELETE_SQL_REQUEST, ID_FIELD, id));
+            stmt.executeUpdate(String.format(DELETE_SQL_REQUEST_USER, ID_FIELD, id));
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -78,7 +77,7 @@ public class SqlSteps {
     public UserModelBD getUsersModelBD(int id) {
         try (Connection connection = getConnection();
              Statement stmt = connection.createStatement()) {
-            ResultSet result = stmt.executeQuery(String.format(SELECT_BY_ID_SQL_REQUEST, ID_FIELD, id));
+            ResultSet result = stmt.executeQuery(String.format(SELECT_BY_ID_SQL_REQUEST_USER, ID_FIELD, id));
             if (result.next()) {
                 UserModelBD userBD = UserModelBD.builder()
                         .id(result.getString(ID_FIELD))
@@ -100,5 +99,4 @@ public class SqlSteps {
         }
         return null;
     }
-
 }

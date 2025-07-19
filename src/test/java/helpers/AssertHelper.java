@@ -17,7 +17,7 @@ public class AssertHelper {
     }
 
     /**
-     * Сравнение объектов по указанным полям
+     * Сравнение объектов User по указанным полям
      * @param expected ожидаемый объект
      * @param actual фактический объект
      */
@@ -31,13 +31,14 @@ public class AssertHelper {
                 .isEqualTo(actual);
     }
 
+
     /**
      * Проверка статуса удаления user
      * @param veriable статус удаления
      */
     public static void assertStatusUserDeleted(Boolean veriable) {
         assertEquals(true, veriable,
-                "DELETE_STATUS пользователя должен быть true");
+                "Статус пользователя должен быть true");
     }
 
     /**
@@ -49,4 +50,38 @@ public class AssertHelper {
                 .withFailMessage("Пользователь не удалился из БД")
                 .isNull();
     }
+
+    /**
+     * Проверка статуса удаления post
+     * @param status статус удаления
+     */
+    public static void assertStatusPostDeleted(String status) {
+        assertEquals("trash", status,
+                "Статус должен быть 'trash'");
+    }
+
+    /**
+     * Проверка статуса удаления comment
+     * @param status статус удаления
+     */
+    public static void assertStatusCommentDeleted(String status) {
+        assertEquals("trash", status,
+                "Статус должен быть 'trash'");
+    }
+
+    /**
+     * Сравнение объектов comment по указанным полям
+     * @param expected ожидаемый объект
+     * @param actual фактический объект
+     */
+    public static void assertCommentFieldsEqual(Object expected, Object actual) {
+        assertThat(expected)
+                .usingRecursiveComparison()
+                .ignoringAllOverriddenEquals()
+                .ignoringFields(
+                        "author_email", "author_ip", "author_user_agent"
+                )
+                .isEqualTo(actual);
+    }
+
 }

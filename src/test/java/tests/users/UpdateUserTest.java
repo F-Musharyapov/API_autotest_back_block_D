@@ -1,7 +1,7 @@
 package tests.users;
 
 import config.BaseConfig;
-import database.SqlSteps;
+import database.UsersSqlSteps;
 import database.model.UserModelBD;
 import helpers.AssertHelper;
 import helpers.BaseRequests;
@@ -24,7 +24,7 @@ import static helpers.TestDataHelper.*;
 import static io.restassured.RestAssured.given;
 
 /**
- * Класс тестирования обновления сущности User
+ * Класс тестирования API запроса обновления данных сущности User
  */
 public class UpdateUserTest {
 
@@ -59,32 +59,32 @@ public class UpdateUserTest {
     private UsersUpdateResponse usersUpdateResponse;
 
     /**
-     * Метод инициализации спецификации запроса
+     * Метод инициализации спецификации запроса и запуск метода createUser
      *
      * @throws IOException Обработка ошибок при инициализации спецификацию запроса BaseRequests.initRequestSpecification()
      */
     @BeforeEach
     public void setup() throws IOException {
         requestSpecification = BaseRequests.initRequestSpecification();
+        createUser();
     }
 
     /**
      * Метод создания сущности user перед тестом
      */
-    @BeforeEach
     public void createUser() {
 
         usersCreateRequest = UsersCreateRequest.builder()
-                .username(getRandomUserName())
-                .name(getRandomDisplayName())
-                .first_name(getRandomFirstName())
-                .last_name(getRandomLastname())
-                .email(getRandomEmail())
-                .url(getRandomUrl())
-                .description(getRandomDescription())
-                .nickname(getRandomNickName())
-                .slug(getRandomSlug())
-                .password(getRandomPassword())
+                .username(getUserRandomUserName())
+                .name(getUserRandomDisplayName())
+                .first_name(getUserRandomFirstName())
+                .last_name(getUserRandomLastname())
+                .email(getUserRandomEmail())
+                .url(getUserRandomUrl())
+                .description(getUserRandomDescription())
+                .nickname(getUserRandomNickName())
+                .slug(getUserRandomSlug())
+                .password(getUserRandomPassword())
                 .build();
 
         usersCreateResponse = given()
@@ -99,20 +99,19 @@ public class UpdateUserTest {
 
     @SneakyThrows
     @Test
-    @DisplayName("Тестовый метод для обновления юзера, сравнения данных в запросе и в БД")
+    @DisplayName("Тестовый метод для обновления данных user, сравнение данных в запросе и в БД")
     public void userUpdateTest() {
 
         usersUpdateRequest = UsersUpdateRequest.builder()
-                //.username(getRandomUserName())
-                .name(getRandomDisplayName())
-                .first_name(getRandomFirstName())
-                .last_name(getRandomLastname())
-                .email(getRandomEmail())
-                .url(getRandomUrl())
-                .description(getRandomDescription())
-                .nickname(getRandomNickName())
-                .slug(getRandomSlug())
-                .password(getRandomPassword())
+                .name(getUserRandomDisplayName())
+                .first_name(getUserRandomFirstName())
+                .last_name(getUserRandomLastname())
+                .email(getUserRandomEmail())
+                .url(getUserRandomUrl())
+                .description(getUserRandomDescription())
+                .nickname(getUserRandomNickName())
+                .slug(getUserRandomSlug())
+                .password(getUserRandomPassword())
                 .build();
 
         usersUpdateResponse = given()
@@ -124,8 +123,8 @@ public class UpdateUserTest {
                 .statusCode(STATUS_CODE_OK)
                 .extract().as(UsersUpdateResponse.class);
 
-        Connection connection = SqlSteps.getConnection();
-        UserModelBD userBD = new SqlSteps(connection).getUsersModelBD(Integer.parseInt(usersUpdateResponse.getId()));
+        Connection connection = UsersSqlSteps.getConnection();
+        UserModelBD userBD = new UsersSqlSteps(connection).getUsersModelBD(Integer.parseInt(usersUpdateResponse.getId()));
         connection.close();
 
         AssertHelper.assertObjectsEqual(usersUpdateResponse, userBD);
@@ -139,8 +138,8 @@ public class UpdateUserTest {
     @DisplayName("Удаление User после завершения тестов")
     public void deleteUserInDataBase() {
         if (usersCreateResponse != null) {
-            Connection connection = SqlSteps.getConnection();
-            new SqlSteps(connection).deleteUser(usersCreateResponse.getId());
+            Connection connection = UsersSqlSteps.getConnection();
+            new UsersSqlSteps(connection).deleteUser(usersCreateResponse.getId());
             connection.close();
         }
     }

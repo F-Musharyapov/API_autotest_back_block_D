@@ -92,4 +92,75 @@ public interface BaseConfig extends Config {
      */
     String deleteUserEndpoint();
 
+    /**
+     * Эндпоинт создания Post
+     *
+     * @return эндпоинт
+     */
+    String createPostEndpoint();
+
+    /**
+     * Эндпоинт чтения Post
+     *
+     * @return эндпоинт
+     */
+    String readPostEndpoint();
+
+    /**
+     * Эндпоинт чтения всех Post
+     *
+     * @return эндпоинт
+     */
+    String allPostEndpoint();
+
+    /**
+     * Эндпоинт обновления Post
+     *
+     * @return эндпоинт
+     */
+    String updatePostEndpoint();
+
+    /**
+     * Эндпоинт удаления Post
+     *
+     * @return эндпоинт
+     */
+    String deletePostEndpoint();
+
+    /**
+     * Эндпоинт создания Comment
+     *
+     * @return эндпоинт
+     */
+    String createCommentEndpoint();
+
+    /**
+     * Эндпоинт чтения Comment
+     *
+     * @return эндпоинт
+     */
+    String readCommentEndpoint();
+
+    /**
+     * Эндпоинт чтения всех Comment
+     *
+     * @return эндпоинт
+     */
+    String allCommentEndpoint();
+
+    /**
+     * Эндпоинт обновления Comment
+     *
+     * @return эндпоинт
+     */
+    String updateCommentEndpoint();
+
+    /**
+     * Эндпоинт удаления Comment
+     *
+     * @return эндпоинт
+     */
+    String deleteCommentEndpoint();
+
+
 }
