@@ -16,15 +16,49 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PostsUpdateRequest {
 
+    /**
+     * ЧПУ URL поста
+     */
     private String slug;
-    private String status; // publish, future, draft, pending,private
+
+    /**
+     * Статус поста (publish, future, draft, pending, private)
+     */
+    private String status;
+
+    /**
+     * Заголовок поста
+     */
     private String title;
+
+    /**
+     * Контент поста
+     */
     private String content;
-    //private int author;
-    private String excerpt; // отрывок
-    private String comment_status; // open,closed
-    private String ping_status; // open,closed
-    private String format; // standard, aside, chat, gallery, link, image, quote, status, video,audio
+
+    /**
+     * Краткое описание поста
+     */
+    private String excerpt;
+
+    /**
+     * Статус комментариев (open, closed)
+     */
+    private String comment_status;
+
+    /**
+     * Статус пингов (open, closed)
+     */
+    private String ping_status;
+
+    /**
+     * Формат поста (standard, aside, chat, gallery, link, image, quote, status, video, audio)
+     */
+    private String format;
+
+    /**
+     * Закрепленность поста
+     */
     private Boolean sticky;
 
 }

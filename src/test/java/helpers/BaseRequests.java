@@ -12,6 +12,7 @@ import io.restassured.specification.RequestSpecification;
 import org.aeonbits.owner.ConfigFactory;
 
 import java.io.IOException;
+
 import static io.restassured.RestAssured.preemptive;
 
 
@@ -26,7 +27,6 @@ public class BaseRequests {
     private static final BaseConfig config = ConfigFactory.create(BaseConfig.class, System.getenv());
 
     static {
-        // Настройка ObjectMapper для поддержки Java 8 Time API
         RestAssured.config = RestAssured.config()
                 .objectMapperConfig(new ObjectMapperConfig()
                         .jackson2ObjectMapperFactory((cls, charset) -> {

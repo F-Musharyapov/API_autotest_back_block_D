@@ -10,6 +10,9 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PostsDeleteResponse {
 
+    /**
+     * Статус поста (publish, future, draft, pending, private)
+     */
     private String status;
 
 }

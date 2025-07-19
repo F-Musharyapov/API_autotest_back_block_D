@@ -18,23 +18,85 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PostsCreateResponse {
+
+    /**
+     * Уникальный идентификатор поста
+     */
     private int id;
+
+    /**
+     * Идентификатор автора поста
+     */
     private int author;
+
+    /**
+     * Дата создания поста в локальном времени
+     */
     private LocalDateTime date;
+
+    /**
+     * Дата создания поста в GMT
+     */
     private LocalDateTime date_gmt;
+
+    /**
+     * Контент поста
+     */
     private Content content;
+
+    /**
+     * Заголовок поста
+     */
     private Title title;
+
+    /**
+     * Краткое описание поста
+     */
     private Excerpt excerpt;
+
+    /**
+     * Статус поста (publish, future, draft, pending, private)
+     */
     private String status;
+
+    /**
+     * Статус комментариев (open, closed)
+     */
     private String comment_status;
+
+    /**
+     * Статус пингов (open, closed)
+     */
     private String ping_status;
+
+    /**
+     * ЧПУ URL поста
+     */
     private String slug;
+
+    /**
+     * Дата последнего изменения поста в локальном времени
+     */
     private LocalDateTime modified;
+
+    /**
+     * Дата последнего изменения поста в GMT
+     */
     private LocalDateTime modified_gmt;
+
+    /**
+     * Глобальный уникальный идентификатор поста
+     */
     private Guid guid;
+
+    /**
+     * Тип записи
+     */
     private String type;
 
-    // Вложенные классы
+    /**
+     * Вложенный класс Content
+     */
     @Data
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Content {
@@ -47,6 +109,9 @@ public class PostsCreateResponse {
         private int block_version;
     }
 
+    /**
+     * Вложенный класс Title
+     */
     @Data
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Title {
@@ -55,6 +120,9 @@ public class PostsCreateResponse {
         private String rendered;
     }
 
+    /**
+     * Вложенный класс Excerpt
+     */
     @Data
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Excerpt {
@@ -65,6 +133,9 @@ public class PostsCreateResponse {
         private boolean isProtected;
     }
 
+    /**
+     * Вложенный класс Guid
+     */
     @Data
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Guid {

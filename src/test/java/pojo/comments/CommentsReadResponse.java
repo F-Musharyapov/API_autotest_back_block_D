@@ -2,7 +2,6 @@ package pojo.comments;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,6 +9,9 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+/**
+ * POJO класс для хранения тела ответа API запроса при чтении comment
+ */
 @Data
 @Builder
 @NoArgsConstructor
@@ -17,28 +19,63 @@ import java.time.LocalDateTime;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CommentsReadResponse {
 
+    /**
+     * Уникальный идентификатор комментария
+     */
     private Integer id;
+
+    /**
+     * Идентификатор связанного поста
+     */
     private Integer post;
+
+    /**
+     * Отображаемое имя автора
+     */
     private String author_name;
-    //private String author_email;
+
+    /**
+     * URL автора
+     */
     private String author_url;
-    //private String author_ip;
+
+    /**
+     * Дата публикации комментария в часовом поясе сайта
+     */
     private LocalDateTime date;
+
+    /**
+     * Дата публикации комментария по Гринвичу
+     */
     private LocalDateTime date_gmt;
-    @JsonProperty("content")
+
+    /**
+     * Содержание комментария
+     */
     private CommentsReadResponse.Content content;
+
+    /**
+     * Статус комментария
+     */
     private String status;
-    //private String author_user_agent;
+
+    /**
+     * Тип комментария
+     */
     private String type;
+
+    /**
+     * Тип комментария
+     */
     private Integer author;
 
-    // Вложенные классы
+    /**
+     * Вложенный класс Content
+     */
     @Data
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Content {
-        @JsonProperty("rendered")
         private String rendered;
-
         @JsonIgnore
         private String raw;
     }

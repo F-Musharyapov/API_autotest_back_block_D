@@ -53,30 +53,39 @@ public class TestDataHelper {
     public static String getUserRandomEmail() {
         return faker.regexify(EMAIL_USER);
     }
+
     public static String getUserRandomUserName() {
         return faker.name().username();
     }
+
     public static String getUserRandomDisplayName() {
         return faker.name().nameWithMiddle();
     }
+
     public static String getUserRandomFirstName() {
         return faker.name().lastName();
     }
+
     public static String getUserRandomLastname() {
         return faker.name().firstName();
     }
+
     public static String getUserRandomUrl() {
         return faker.internet().url();
     }
+
     public static String getUserRandomDescription() {
         return faker.lorem().sentence(2, 4);
     }
+
     public static String getUserRandomNickName() {
         return faker.funnyName().name();
     }
+
     public static String getUserRandomSlug() {
         return faker.regexify(SLUG_USER);
     }
+
     public static String getUserRandomPassword() {
         return faker.internet().password();
     }
@@ -89,27 +98,35 @@ public class TestDataHelper {
     public static String getPostRandomSlug() {
         return faker.regexify(SLUG_POST);
     }
+
     public static String getPostRandomStatus() {
         return STATUS_POST[random.nextInt(STATUS_POST.length)];
     }
+
     public static String getPostRandomTitle() {
         return faker.regexify(TITLE_POST);
     }
+
     public static String getPostRandomContent() {
         return faker.lorem().sentence(20, 30);
     }
+
     public static String getPostRandomExcerpt() {
         return faker.lorem().sentence(10, 20);
     }
+
     public static String getPostRandomCommentStatus() {
         return COMMENT_STATUS_POST[random.nextInt(COMMENT_STATUS_POST.length)];
     }
+
     public static String getPostRandomPingStatus() {
         return PING_STATUS_POST[random.nextInt(PING_STATUS_POST.length)];
     }
+
     public static String getPostRandomFormat() {
         return FORMAT_POST[random.nextInt(FORMAT_POST.length)];
     }
+
     public static Boolean getPostRandomSticky() {
         return STICKY_POST[random.nextInt(STICKY_POST.length)];
     }

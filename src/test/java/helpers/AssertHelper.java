@@ -3,6 +3,9 @@ package helpers;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/**
+ * Набор Assert
+ */
 public class AssertHelper {
 
     /**
@@ -30,7 +33,6 @@ public class AssertHelper {
                 )
                 .isEqualTo(actual);
     }
-
 
     /**
      * Проверка статуса удаления user
@@ -83,5 +85,4 @@ public class AssertHelper {
                 )
                 .isEqualTo(actual);
     }
-
 }

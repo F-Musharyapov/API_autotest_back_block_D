@@ -8,7 +8,7 @@ import lombok.EqualsAndHashCode;
 import java.time.LocalDateTime;
 
 /**
- * Модель сущность user базы данных
+ * Модель сущности user базы данных
  */
 @Data
 @Builder
@@ -16,25 +16,65 @@ import java.time.LocalDateTime;
 public class UserModelBD {
 
     /**
-     * Переменные для хранения данных из БД
+     * Уникальный идентифигатор пользователя
      */
-    private final String id;//
+    private final String id;
+
+    /**
+     * Логин
+     */
     @JsonProperty("user_login")
-    private final String username; //username
+    private final String username;
+
+    /**
+     * Буквенно-цифровой идентификатор пользователя
+     */
     @JsonProperty("user_nicename")
-    private final String slug; //slug
+    private final String slug;
+
+    /**
+     * Адрес почты
+     */
     @JsonProperty("user_email")
-    private final String email;//
-    private final String nickname;//
-    private final String first_name;//
-    private final String last_name;//
-    private final String description;//
+    private final String email;
+
+    /**
+     * Псевдоним пользователя
+     */
+    private final String nickname;
+
+    /**
+     * Имя пользователя
+     */
+    private final String first_name;
+
+    /**
+     * Фамилия пользователя
+     */
+    private final String last_name;
+
+    /**
+     * Описание пользователя
+     */
+    private final String description;
+
+    /**
+     * Дата регистрации
+     */
     @JsonProperty("user_registered")
-    private final LocalDateTime registered_date;//
+    private final LocalDateTime registered_date;
+
+    /**
+     * Отображаемое имя
+     */
     @JsonProperty("display_name")
-    private final String name; //name
+    private final String name;
+
+    /**
+     * URL пользователя
+     */
     @JsonProperty("user_url")
-    private final String url;//
+    private final String url;
 
 }
 

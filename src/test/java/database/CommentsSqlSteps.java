@@ -27,11 +27,9 @@ public class CommentsSqlSteps {
     private static final String COMMENT_DATE_FIELD = "comment_date"; //date
     private static final String COMMENT_DATE_GMT_FIELD = "comment_date_gmt"; //date_gmt
     private static final String COMMENT_CONTENT_FIELD = "comment_content"; //content
-    //private static final String COMMENT_KARMA_FIELD = "comment_karma"; //
     private static final String COMMENT_APPROVED_FIELD = "comment_approved"; //status
     private static final String COMMENT_AGENT_FIELD = "comment_agent"; //author_user_agent
     private static final String COMMENT_TYPE_FIELD = "comment_type"; //type
-    //private static final String COMMENT_PARENT_FIELD = "comment_parent"; //
     private static final String USER_ID_FIELD = "user_id"; //author
 
     /**
@@ -46,7 +44,7 @@ public class CommentsSqlSteps {
     private static final BaseConfig config = ConfigFactory.create(BaseConfig.class, System.getenv());
 
     /**
-     * Экземпляр Connection
+     * Экземпляр connection
      */
     private final Connection connection;
 
@@ -79,16 +77,16 @@ public class CommentsSqlSteps {
      * Метод запроса в БД для получения данных comment
      *
      * @param id идентификатор поля, которое удаляем
+     * @return экзепляр с необходимыми полями
      */
     public CommentModelBD getCommentsModelBD(int id) {
         try (Connection connection = getConnection();
-            Statement stmt = connection.createStatement()) {
+             Statement stmt = connection.createStatement()) {
             ResultSet result = stmt.executeQuery(String.format(SELECT_BY_ID_SQL_REQUEST_COMMENT, COMMENT_ID_FIELD, id));
             if (result.next()) {
                 CommentModelBD commentBD = CommentModelBD.builder()
                         .id(Integer.valueOf(result.getString(COMMENT_ID_FIELD)))
                         .post(Integer.valueOf(result.getString(COMMENT_POST_ID_FIELD)))
-                        //.parent(result.getString(NICENAME_FIELD))
                         .author(Integer.valueOf(result.getString(USER_ID_FIELD)))
                         .author_name(result.getString(COMMENT_AUTHOR_FIELD))
                         .author_email(result.getString(COMMENT_AUTHOR_EMAIL_FIELD))
@@ -98,11 +96,8 @@ public class CommentsSqlSteps {
                         .date(result.getObject(COMMENT_DATE_FIELD, LocalDateTime.class))
                         .date_gmt(result.getObject(COMMENT_DATE_GMT_FIELD, LocalDateTime.class))
                         .content(result.getString(COMMENT_CONTENT_FIELD))
-                        //.link(result.getString(URL_FIELD))
                         .status(result.getString(COMMENT_APPROVED_FIELD))
                         .type(result.getString(COMMENT_TYPE_FIELD))
-                        //.author_avatar_urls(result.getString(URL_FIELD))
-                        //.meta(result.getString(URL_FIELD))
                         .build();
                 return commentBD;
             }

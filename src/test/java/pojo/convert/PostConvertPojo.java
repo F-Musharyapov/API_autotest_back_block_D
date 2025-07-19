@@ -11,29 +11,97 @@ import pojo.posts.PostsUpdateResponse;
 
 import java.time.LocalDateTime;
 
+/**
+ * Конвертер полей в объекте post
+ */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PostConvertPojo {
+
+    /**
+     * Уникальный идентификатор поста
+     */
     private Integer id;
+
+    /**
+     * Идентификатор автора поста
+     */
     private Integer author;
+
+    /**
+     * Дата создания поста в локальном времени
+     */
     private LocalDateTime date;
+
+    /**
+     * Дата создания поста в GMT
+     */
     private LocalDateTime date_gmt;
+
+    /**
+     * Контент поста
+     */
     private String content;
+
+    /**
+     * Заголовок поста
+     */
     private String title;
+
+    /**
+     * Краткое описание поста
+     */
     private String excerpt;
+
+    /**
+     * Статус поста (publish, future, draft, pending, private)
+     */
     private String status;
+
+    /**
+     * Статус комментариев (open, closed)
+     */
     private String comment_status;
+
+    /**
+     * Статус пингов (open, closed)
+     */
     private String ping_status;
+
+    /**
+     * ЧПУ URL поста
+     */
     private String slug;
+
+    /**
+     * Дата последнего изменения поста в локальном времени
+     */
     private LocalDateTime modified;
+
+    /**
+     * Дата последнего изменения поста в GMT
+     */
     private LocalDateTime modified_gmt;
+
+    /**
+     * Глобальный уникальный идентификатор поста
+     */
     private String guid;
+
+    /**
+     * Тип записи
+     */
     private String type;
 
-    // Метод для конвертации из PostsCreateResponse
+    /**
+     * Метод для конвертации объекта PostsCreateResponse
+     *
+     * @param response параметр ответа API
+     * @return сконвертированный объект
+     */
     public static PostConvertPojo from(PostsCreateResponse response) {
         return PostConvertPojo.builder()
                 .id(response.getId())
@@ -54,7 +122,12 @@ public class PostConvertPojo {
                 .build();
     }
 
-    // Метод для конвертации из PostsReadResponse
+    /**
+     * Метод для конвертации объекта PostsReadResponse
+     *
+     * @param response параметр ответа API
+     * @return сконвертированный объект
+     */
     public static PostConvertPojo from(PostsReadResponse response) {
         return PostConvertPojo.builder()
                 .id(response.getId())
@@ -75,7 +148,12 @@ public class PostConvertPojo {
                 .build();
     }
 
-    // Метод для конвертации из PostsReadResponse
+    /**
+     * Метод для конвертации объекта PostsUpdateResponse
+     *
+     * @param response параметр ответа API
+     * @return сконвертированный объект
+     */
     public static PostConvertPojo from(PostsUpdateResponse response) {
         return PostConvertPojo.builder()
                 .id(response.getId())
@@ -96,6 +174,12 @@ public class PostConvertPojo {
                 .build();
     }
 
+    /**
+     * Очистка параметра от тегов и переносов
+     *
+     * @param html неочищенный текст
+     * @return очищенный текст
+     */
     private static String cleanHtml(String html) {
         return html != null ? html.replaceAll("<[^>]*>|\\n", "") : null;
     }

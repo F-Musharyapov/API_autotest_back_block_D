@@ -34,14 +34,16 @@ public class UsersSqlSteps {
      * Константы с запросами в БД
      */
     private static final String DELETE_SQL_REQUEST_USER = "DELETE FROM wp_users WHERE %s = %s";
-    //private static final String SELECT_BY_ID_SQL_REQUEST = "SELECT * FROM wp_users WHERE %s = %d";
     private static final String SELECT_BY_ID_SQL_REQUEST_USER = "SELECT u.ID, u.user_nicename, u.user_login, u.user_email, u.user_url, u.user_registered, u.user_status, u.display_name, MAX(CASE WHEN um.meta_key = 'nickname' THEN um.meta_value END) AS nickname, MAX(CASE WHEN um.meta_key = 'first_name' THEN um.meta_value END) AS first_name, MAX(CASE WHEN um.meta_key = 'last_name' THEN um.meta_value END) AS last_name, MAX(CASE WHEN um.meta_key = 'description' THEN um.meta_value END) AS description, MAX(CASE WHEN um.meta_key = 'rich_editing' THEN um.meta_value END) AS rich_editing, MAX(CASE WHEN um.meta_key = 'wp_capabilities' THEN um.meta_value END) AS capabilities, MAX(CASE WHEN um.meta_key = 'wp_user_level' THEN um.meta_value END) AS user_level FROM wp_users u LEFT JOIN wp_usermeta um ON u.ID = um.user_id WHERE u.%s = %s GROUP BY u.ID, u.user_login, u.user_email, u.user_registered, u.user_status, u.display_name";
 
     /**
-     * Экземпляра конфигурации
+     * Экземпляр конфигурации
      */
     private static final BaseConfig config = ConfigFactory.create(BaseConfig.class, System.getenv());
 
+    /**
+     * Экземпляр connection
+     */
     private final Connection connection;
 
     /**
@@ -71,8 +73,8 @@ public class UsersSqlSteps {
 
     /**
      * Метод запроса в БД для получения данных user
-     *
      * @param id идентификатор поля, которое удаляем
+     * @return экзепляр с необходимыми полями
      */
     public UserModelBD getUsersModelBD(int id) {
         try (Connection connection = getConnection();

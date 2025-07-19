@@ -30,17 +30,10 @@ public class PostsSqlSteps {
     private static final String PING_STATUS_FIELD = "ping_status"; //ping_status
     private static final String POST_PASSWORD_FIELD = "post_password"; //password
     private static final String POST_NAME_FIELD = "post_name"; //slug
-    //private static final String TO_PING_FIELD = "to_ping"; //
-    //private static final String PINGED_FIELD = "pinged"; //
     private static final String POST_MODIFIED_FIELD = "post_modified"; //modified
     private static final String POST_MODIFIED_GMT_FIELD = "post_modified_gmt"; //modified_gmt
-    //private static final String POST_CONTENT_FILTERED_FIELD = "post_content_filtered"; //
-    //private static final String POST_PARENT_FIELD = "post_parent"; //
     private static final String GUID_FIELD = "guid"; //guid raw
-    //private static final String MENU_ORDER_FIELD = "menu_order"; //
     private static final String POST_TYPE_FIELD = "post_type"; //type
-    //private static final String POST_MIME_TYPE_FIELD = "post_mime_type"; //
-    //private static final String COMMENT_COUNT_FIELD = "comment_count"; //
 
     /**
      * Константы с запросами в БД
@@ -49,15 +42,17 @@ public class PostsSqlSteps {
     private static final String SELECT_BY_ID_SQL_REQUEST_POST = "SELECT * FROM wp_posts WHERE %s = %d";
 
     /**
-     * Экземпляра конфигурации
+     * Экземпляр конфигурации
      */
     private static final BaseConfig config = ConfigFactory.create(BaseConfig.class, System.getenv());
 
+    /**
+     * Экземпляр connection
+     */
     private final Connection connection;
 
     /**
      * Метод открытия подключения к базе данных с использованием try-with-resources
-     *
      * @return экземпляр подключения
      */
     @SneakyThrows
@@ -68,7 +63,6 @@ public class PostsSqlSteps {
 
     /**
      * Метод удаления post в БД
-     *
      * @param id идентификатор поля, которое удаляем
      */
     public void deletePost(String id) {
@@ -82,8 +76,8 @@ public class PostsSqlSteps {
 
     /**
      * Метод запроса в БД для получения данных post
-     *
      * @param id идентификатор поля, которое удаляем
+     * @return экзепляр с необходимыми полями
      */
     public PostModelBD getPostModelBD(int id) {
         try (Connection connection = getConnection();
@@ -115,129 +109,3 @@ public class PostsSqlSteps {
         return null;
     }
 }
-/*
-{
-        "id": 55,
-        "date": "2025-07-18T22:48:55",
-        "date_gmt": "2025-07-18T19:48:55",
-        "guid": {
-        "rendered": "http://localhost:8000/?p=55"
-        },
-        "modified": "2025-07-18T22:48:56",
-        "modified_gmt": "2025-07-18T19:48:56",
-        "slug": "puuzpokb-hsezbc-gygn-mz-otfe-rocqkgkl__trashed",
-        "status": "trash",
-        "type": "post",
-        "link": "http://localhost:8000/?p=55",
-        "title": {
-        "rendered": "tmfqjqqs pwwjmo hpej"
-        },
-        "content": {
-        "rendered": "<p>Quod aliquam rerum et ut officiis non molestiae voluptas exercitationem neque sit blanditiis veniam quia autem voluptate dolor molestias molestiae temporibus optio provident est quis occaecati sit reiciendis quas praesentium sint sint similique facere dolores magnam laboriosam accusamus iste sed labore voluptatem ut quia.</p>\n",
-        "protected": false
-        },
-        "excerpt": {
-        "rendered": "<p>Ipsam illo est quae a optio est enim distinctio officiis quo est quae voluptatem suscipit qui molestiae possimus officiis enim ut eos officiis.</p>\n",
-        "protected": false
-        },
-        "author": 1,
-        "featured_media": 0,
-        "comment_status": "open",
-        "ping_status": "open",
-        "sticky": false,
-        "template": "",
-        "format": "gallery",
-        "meta": {
-        "footnotes": ""
-        },
-        "categories": [
-        1
-        ],
-        "tags": [],
-        "class_list": [
-        "post-55",
-        "post",
-        "type-post",
-        "status-trash",
-        "format-gallery",
-        "hentry",
-        "category-1",
-        "post_format-post-format-gallery"
-        ],
-        "_links": {
-        "self": [
-        {
-        "href": "http://localhost:8000/index.php?rest_route=/wp/v2/posts/55",
-        "targetHints": {
-        "allow": [
-        "GET",
-        "POST",
-        "PUT",
-        "PATCH",
-        "DELETE"
-        ]
-        }
-        }
-        ],
-        "collection": [
-        {
-        "href": "http://localhost:8000/index.php?rest_route=/wp/v2/posts"
-        }
-        ],
-        "about": [
-        {
-        "href": "http://localhost:8000/index.php?rest_route=/wp/v2/types/post"
-        }
-        ],
-        "author": [
-        {
-        "embeddable": true,
-        "href": "http://localhost:8000/index.php?rest_route=/wp/v2/users/1"
-        }
-        ],
-        "replies": [
-        {
-        "embeddable": true,
-        "href": "http://localhost:8000/index.php?rest_route=%2Fwp%2Fv2%2Fcomments&post=55"
-        }
-        ],
-        "version-history": [
-        {
-        "count": 1,
-        "href": "http://localhost:8000/index.php?rest_route=/wp/v2/posts/55/revisions"
-        }
-        ],
-        "predecessor-version": [
-        {
-        "id": 56,
-        "href": "http://localhost:8000/index.php?rest_route=/wp/v2/posts/55/revisions/56"
-        }
-        ],
-        "wp:attachment": [
-        {
-        "href": "http://localhost:8000/index.php?rest_route=%2Fwp%2Fv2%2Fmedia&parent=55"
-        }
-        ],
-        "wp:term": [
-        {
-        "taxonomy": "category",
-        "embeddable": true,
-        "href": "http://localhost:8000/index.php?rest_route=%2Fwp%2Fv2%2Fcategories&post=55"
-        },
-        {
-        "taxonomy": "post_tag",
-        "embeddable": true,
-        "href": "http://localhost:8000/index.php?rest_route=%2Fwp%2Fv2%2Ftags&post=55"
-        }
-        ],
-        "curies": [
-        {
-        "name": "wp",
-        "href": "https://api.w.org/{rel}",
-        "templated": true
-        }
-        ]
-        }
-        }
-
- */
