@@ -2,7 +2,6 @@ package tests.comments;
 
 import config.BaseConfig;
 import database.CommentsSqlSteps;
-import database.model.CommentModelBD;
 import helpers.AssertHelper;
 import helpers.BaseRequests;
 import io.restassured.specification.RequestSpecification;
@@ -14,9 +13,9 @@ import org.junit.jupiter.api.Test;
 import pojo.comments.CommentsCreateRequest;
 import pojo.comments.CommentsCreateResponse;
 import pojo.comments.CommentsDeleteResponse;
+import tests.BaseTest;
 
 import java.io.IOException;
-import java.sql.Connection;
 
 import static helpers.TestDataHelper.*;
 import static io.restassured.RestAssured.given;
@@ -24,17 +23,7 @@ import static io.restassured.RestAssured.given;
 /**
  * Класс тестирования API запроса удаления сущности Comment
  */
-public class DeleteCommentTest {
-
-    /**
-     * Экземпляра конфигурации
-     */
-    private static final BaseConfig config = ConfigFactory.create(BaseConfig.class, System.getenv());
-
-    /**
-     * Экземпляр спецификации RestAssured
-     */
-    private RequestSpecification requestSpecification;
+public class DeleteCommentTest extends BaseTest {
 
     /**
      * Переменная для хранения данных объекта CommentsCreateRequest
@@ -45,17 +34,6 @@ public class DeleteCommentTest {
      * Переменная для хранения данных объекта commentsCreateResponse
      */
     private CommentsCreateResponse commentsCreateResponse;
-
-    /**
-     * Метод инициализации спецификации запроса и запуск метода createComment
-     *
-     * @throws IOException Обработка ошибок при инициализации спецификацию запроса BaseRequests.initRequestSpecification()
-     */
-    @BeforeEach
-    public void setup() throws IOException {
-        requestSpecification = BaseRequests.initRequestSpecification();
-        createComment();
-    }
 
     /**
      * Метод создания сущности comment перед тестом
@@ -91,12 +69,7 @@ public class DeleteCommentTest {
                 .statusCode(STATUS_CODE_OK)
                 .extract().as(CommentsDeleteResponse.class);
 
-        Connection connection = CommentsSqlSteps.getConnection();
-        CommentModelBD commentBD = new CommentsSqlSteps(connection).getCommentsModelBD(commentsCreateResponse.getId());
-        connection.close();
-
         AssertHelper.assertStatusCommentDeleted(commentsDeleteResponse.getStatus());
-        AssertHelper.assertStatusCommentDeleted(commentBD.getStatus());
-
+        AssertHelper.assertStatusCommentDeleted(new CommentsSqlSteps().getCommentsModelBD(commentsCreateResponse.getId()).getStatus());
     }
 }

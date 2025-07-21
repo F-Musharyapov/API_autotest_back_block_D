@@ -1,23 +1,15 @@
 package tests.comments;
 
-import config.BaseConfig;
 import database.CommentsSqlSteps;
-import database.model.CommentModelBD;
 import helpers.AssertHelper;
-import helpers.BaseRequests;
-import io.restassured.specification.RequestSpecification;
 import lombok.SneakyThrows;
-import org.aeonbits.owner.ConfigFactory;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import pojo.comments.CommentsCreateRequest;
 import pojo.comments.CommentsCreateResponse;
 import pojo.convert.CommentConvertPojo;
-
-import java.io.IOException;
-import java.sql.Connection;
+import tests.BaseTest;
 
 import static helpers.TestDataHelper.*;
 import static io.restassured.RestAssured.given;
@@ -25,17 +17,7 @@ import static io.restassured.RestAssured.given;
 /**
  * Класс тестирования API запроса создания сущности Comment
  */
-public class CreateCommentTest {
-
-    /**
-     * Экземпляра конфигурации
-     */
-    private static final BaseConfig config = ConfigFactory.create(BaseConfig.class, System.getenv());
-
-    /**
-     * Экземпляр спецификации RestAssured
-     */
-    private RequestSpecification requestSpecification;
+public class CreateCommentTest extends BaseTest {
 
     /**
      * Переменная для хранения данных объекта CommentsCreateRequest
@@ -46,16 +28,6 @@ public class CreateCommentTest {
      * Переменная для хранения данных объекта commentsCreateResponse
      */
     private CommentsCreateResponse commentsCreateResponse;
-
-    /**
-     * Метод инициализации спецификации запроса
-     *
-     * @throws IOException Обработка ошибок при инициализации спецификацию запроса BaseRequests.initRequestSpecification()
-     */
-    @BeforeEach
-    public void setup() throws IOException {
-        requestSpecification = BaseRequests.initRequestSpecification();
-    }
 
     @SneakyThrows
     @Test
@@ -77,13 +49,9 @@ public class CreateCommentTest {
                 .statusCode(STATUS_CODE_CREATED)
                 .extract().as(CommentsCreateResponse.class);
 
-        Connection connection = CommentsSqlSteps.getConnection();
-        CommentModelBD commentBD = new CommentsSqlSteps(connection).getCommentsModelBD(commentsCreateResponse.getId());
-        connection.close();
-
-        CommentConvertPojo commentConvertPojo = CommentConvertPojo.from(commentsCreateResponse);
-
-        AssertHelper.assertObjectsEqual(commentConvertPojo, commentBD);
+        AssertHelper.assertObjectsEqual(
+                CommentConvertPojo.from(commentsCreateResponse),
+                new CommentsSqlSteps().getCommentsModelBD(commentsCreateResponse.getId()));
     }
 
     /**
@@ -94,9 +62,7 @@ public class CreateCommentTest {
     @DisplayName("Удаление Comment после завершения тестов")
     public void deleteCommentInDataBase() {
         if (commentsCreateResponse != null) {
-            Connection connection = CommentsSqlSteps.getConnection();
-            new CommentsSqlSteps(connection).deleteComment(String.valueOf(commentsCreateResponse.getId()));
-            connection.close();
+            new CommentsSqlSteps().deleteComment(String.valueOf(commentsCreateResponse.getId()));
         }
     }
 }

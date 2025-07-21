@@ -9,8 +9,6 @@ import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
-import org.aeonbits.owner.ConfigFactory;
-
 import java.io.IOException;
 
 import static io.restassured.RestAssured.preemptive;
@@ -22,11 +20,17 @@ import static io.restassured.RestAssured.preemptive;
 public class BaseRequests {
 
     /**
-     * Экземпляр интерфейса с конфигурацией
+     * Экземпляр конфигурации с параметрами запроса
      */
-    private static final BaseConfig config = ConfigFactory.create(BaseConfig.class, System.getenv());
+    private final BaseConfig config;
 
-    static {
+    /**
+     * Конструктор BaseConfig с инициализацией настройки RestAssured
+     *
+     * @param config с параметрами
+     */
+    public BaseRequests(BaseConfig config) {
+        this.config = config;
         RestAssured.config = RestAssured.config()
                 .objectMapperConfig(new ObjectMapperConfig()
                         .jackson2ObjectMapperFactory((cls, charset) -> {
@@ -37,13 +41,13 @@ public class BaseRequests {
     }
 
     /**
-     * Метод для получения спецификации RestAssured
+     * Метод для получения спецификации RestAssured с базовыми настройками
      *
-     * @return спецификация
-     * @throws IOException
+     * @return объект RequestSpecification с настройками
+     * @throws IOException если ошибки при формировании спецификации
      */
-    @Description("Дефолтный метод для получения спецификации RestAssured")
-    public static RequestSpecification initRequestSpecification() throws IOException {
+    @Description("Создание базовой спецификации REST-запроса с настройками из конфигурации")
+    public RequestSpecification initRequestSpecification() throws IOException {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
         RequestSpecBuilder requestSpecBuilder = new RequestSpecBuilder();
         requestSpecBuilder
@@ -51,8 +55,6 @@ public class BaseRequests {
                 .setContentType(ContentType.JSON)
                 .setAccept(ContentType.JSON)
                 .setAuth(preemptive().basic(config.usernameAuth(), config.passwordAuth()));
-        ;
-        RequestSpecification requestSpecification;
-        return requestSpecification = requestSpecBuilder.build();
+        return requestSpecBuilder.build();
     }
 }

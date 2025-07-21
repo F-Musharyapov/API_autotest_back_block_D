@@ -2,7 +2,6 @@ package tests.comments;
 
 import config.BaseConfig;
 import database.CommentsSqlSteps;
-import database.model.CommentModelBD;
 import helpers.AssertHelper;
 import helpers.BaseRequests;
 import io.restassured.specification.RequestSpecification;
@@ -16,9 +15,9 @@ import pojo.comments.CommentsCreateRequest;
 import pojo.comments.CommentsCreateResponse;
 import pojo.comments.CommentsReadResponse;
 import pojo.convert.CommentConvertPojo;
+import tests.BaseTest;
 
 import java.io.IOException;
-import java.sql.Connection;
 
 import static helpers.TestDataHelper.*;
 import static io.restassured.RestAssured.given;
@@ -26,17 +25,7 @@ import static io.restassured.RestAssured.given;
 /**
  * Класс тестирования API запроса чтения данных сущности Comment
  */
-public class ReadCommentTest {
-
-    /**
-     * Экземпляра конфигурации
-     */
-    private static final BaseConfig config = ConfigFactory.create(BaseConfig.class, System.getenv());
-
-    /**
-     * Экземпляр спецификации RestAssured
-     */
-    private RequestSpecification requestSpecification;
+public class ReadCommentTest extends BaseTest {
 
     /**
      * Переменная для хранения данных объекта CommentsCreateRequest
@@ -52,17 +41,6 @@ public class ReadCommentTest {
      * Переменная для хранения данных объекта commentsReadResponse
      */
     private CommentsReadResponse commentsReadResponse;
-
-    /**
-     * Метод инициализации спецификации запроса и запуск метода commentCreate
-     *
-     * @throws IOException Обработка ошибок при инициализации спецификацию запроса BaseRequests.initRequestSpecification()
-     */
-    @BeforeEach
-    public void setup() throws IOException {
-        requestSpecification = BaseRequests.initRequestSpecification();
-        commentCreate();
-    }
 
     /**
      * Метод создания сущности comment перед тестом
@@ -98,13 +76,8 @@ public class ReadCommentTest {
                 .statusCode(STATUS_CODE_OK)
                 .extract().as(CommentsReadResponse.class);
 
-        Connection connection = CommentsSqlSteps.getConnection();
-        CommentModelBD commentBD = new CommentsSqlSteps(connection).getCommentsModelBD(commentsReadResponse.getId());
-        connection.close();
-
-        CommentConvertPojo commentConvertPojo = CommentConvertPojo.from(commentsReadResponse);
-
-        AssertHelper.assertCommentFieldsEqual(commentConvertPojo, commentBD);
+        AssertHelper.assertCommentFieldsEqual(CommentConvertPojo.from(commentsReadResponse),
+                new CommentsSqlSteps().getCommentsModelBD(commentsReadResponse.getId()));
     }
 
     /**
@@ -115,9 +88,7 @@ public class ReadCommentTest {
     @DisplayName("Удаление Comment после завершения тестов")
     public void deleteCommentInDataBase() {
         if (commentsCreateResponse != null) {
-            Connection connection = CommentsSqlSteps.getConnection();
-            new CommentsSqlSteps(connection).deleteComment(String.valueOf(commentsCreateResponse.getId()));
-            connection.close();
+            new CommentsSqlSteps().deleteComment(String.valueOf(commentsCreateResponse.getId()));
         }
     }
 }

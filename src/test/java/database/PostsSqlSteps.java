@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 /**
  * Метод для взаимодействия с БД для сущности Post
  */
-@AllArgsConstructor
 public class PostsSqlSteps {
 
     /**
@@ -47,12 +46,7 @@ public class PostsSqlSteps {
     private static final BaseConfig config = ConfigFactory.create(BaseConfig.class, System.getenv());
 
     /**
-     * Экземпляр connection
-     */
-    private final Connection connection;
-
-    /**
-     * Метод открытия подключения к базе данных с использованием try-with-resources
+     * Метод открытия подключения к базе данных
      * @return экземпляр подключения
      */
     @SneakyThrows
@@ -84,7 +78,8 @@ public class PostsSqlSteps {
              Statement stmt = connection.createStatement()) {
             ResultSet result = stmt.executeQuery(String.format(SELECT_BY_ID_SQL_REQUEST_POST, ID_FIELD, id));
             if (result.next()) {
-                PostModelBD postModelBD = PostModelBD.builder()
+                return
+                        PostModelBD.builder()
                         .id(Integer.valueOf(result.getString(ID_FIELD)))
                         .author(Integer.valueOf(result.getString(POST_AUTHOR_FIELD)))
                         .date(result.getObject(POST_DATE_FIELD, LocalDateTime.class))
@@ -101,7 +96,6 @@ public class PostsSqlSteps {
                         .guid(result.getString(GUID_FIELD))
                         .type(result.getString(POST_TYPE_FIELD))
                         .build();
-                return postModelBD;
             }
         } catch (SQLException e) {
             e.printStackTrace();

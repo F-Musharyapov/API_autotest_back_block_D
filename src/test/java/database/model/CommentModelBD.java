@@ -78,5 +78,4 @@ public class CommentModelBD {
      * Идентификатор объекта пользователя
      */
     private final Integer author;
-
 }

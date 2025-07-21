@@ -88,5 +88,4 @@ public class PostModelBD {
      * Тип записи
      */
     private final String type;
-
 }

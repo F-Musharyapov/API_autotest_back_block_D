@@ -1,15 +1,9 @@
 package tests.posts;
 
-import config.BaseConfig;
 import database.PostsSqlSteps;
-import database.model.PostModelBD;
 import helpers.AssertHelper;
-import helpers.BaseRequests;
-import io.restassured.specification.RequestSpecification;
 import lombok.SneakyThrows;
-import org.aeonbits.owner.ConfigFactory;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import pojo.convert.PostConvertPojo;
@@ -17,9 +11,7 @@ import pojo.posts.PostsCreateRequest;
 import pojo.posts.PostsCreateResponse;
 import pojo.posts.PostsUpdateRequest;
 import pojo.posts.PostsUpdateResponse;
-
-import java.io.IOException;
-import java.sql.Connection;
+import tests.BaseTest;
 
 import static helpers.TestDataHelper.*;
 import static io.restassured.RestAssured.given;
@@ -27,17 +19,7 @@ import static io.restassured.RestAssured.given;
 /**
  * Класс тестирования API запроса обновления данных сущности Post
  */
-public class UpdatePostTest {
-
-    /**
-     * Экземпляра конфигурации
-     */
-    private static final BaseConfig config = ConfigFactory.create(BaseConfig.class, System.getenv());
-
-    /**
-     * Экземпляр спецификации RestAssured
-     */
-    private RequestSpecification requestSpecification;
+public class UpdatePostTest extends BaseTest {
 
     /**
      * Переменная для хранения данных объекта PostsCreateRequest
@@ -58,17 +40,6 @@ public class UpdatePostTest {
      * Переменная для хранения данных объекта PostsUpdateRequest
      */
     private PostsUpdateResponse postsUpdateResponse;
-
-    /**
-     * Метод инициализации спецификации запроса и запуска метода createPost
-     *
-     * @throws IOException Обработка ошибок при инициализации спецификацию запроса BaseRequests.initRequestSpecification()
-     */
-    @BeforeEach
-    public void setup() throws IOException {
-        requestSpecification = BaseRequests.initRequestSpecification();
-        createPost();
-    }
 
     /**
      * Метод создания сущности post перед тестом
@@ -124,13 +95,8 @@ public class UpdatePostTest {
                 .statusCode(STATUS_CODE_OK)
                 .extract().as(PostsUpdateResponse.class);
 
-        Connection connection = PostsSqlSteps.getConnection();
-        PostModelBD postBD = new PostsSqlSteps(connection).getPostModelBD(postsUpdateResponse.getId());
-        connection.close();
-
-        PostConvertPojo postConvertPojo = PostConvertPojo.from(postsUpdateResponse);
-
-        AssertHelper.assertObjectsEqual(postConvertPojo, postBD);
+        AssertHelper.assertObjectsEqual(PostConvertPojo.from(postsUpdateResponse),
+                new PostsSqlSteps().getPostModelBD(postsUpdateResponse.getId()));
     }
 
     /**
@@ -141,9 +107,7 @@ public class UpdatePostTest {
     @DisplayName("Удаление Posts после завершения тестов")
     public void deletePostInDataBase() {
         if (postsCreateResponse != null) {
-            Connection connection = PostsSqlSteps.getConnection();
-            new PostsSqlSteps(connection).deletePost(String.valueOf(postsCreateResponse.getId()));
-            connection.close();
+            new PostsSqlSteps().deletePost(String.valueOf(postsCreateResponse.getId()));
         }
     }
 }

@@ -161,6 +161,4 @@ public interface BaseConfig extends Config {
      * @return эндпоинт
      */
     String deleteCommentEndpoint();
-
-
 }

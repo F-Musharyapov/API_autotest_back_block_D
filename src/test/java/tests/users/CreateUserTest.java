@@ -1,40 +1,23 @@
 package tests.users;
 
-import config.BaseConfig;
 import database.UsersSqlSteps;
 import database.model.UserModelBD;
-import helpers.AssertHelper;
-import helpers.BaseRequests;
-import io.restassured.specification.RequestSpecification;
 import lombok.SneakyThrows;
-import org.aeonbits.owner.ConfigFactory;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import pojo.users.UsersCreateRequest;
 import pojo.users.UsersCreateResponse;
+import tests.BaseTest;
 
-import java.io.IOException;
-import java.sql.Connection;
-
+import static helpers.AssertHelper.assertUserCreateFieldsEqual;
 import static helpers.TestDataHelper.*;
 import static io.restassured.RestAssured.given;
 
 /**
  * Класс тестирования API запроса создания сущности User
  */
-public class CreateUserTest {
-
-    /**
-     * Экземпляра конфигурации
-     */
-    private static final BaseConfig config = ConfigFactory.create(BaseConfig.class, System.getenv());
-
-    /**
-     * Экземпляр спецификации RestAssured
-     */
-    private RequestSpecification requestSpecification;
+public class CreateUserTest extends BaseTest {
 
     /**
      * Переменная для хранения данных объекта UsersCreateRequest
@@ -45,16 +28,6 @@ public class CreateUserTest {
      * Переменная для хранения данных объекта UsersCreateResponse
      */
     private UsersCreateResponse usersCreateResponse;
-
-    /**
-     * Метод инициализации спецификации запроса
-     *
-     * @throws IOException Обработка ошибок при инициализации спецификацию запроса BaseRequests.initRequestSpecification()
-     */
-    @BeforeEach
-    public void setup() throws IOException {
-        requestSpecification = BaseRequests.initRequestSpecification();
-    }
 
     @SneakyThrows
     @Test
@@ -83,11 +56,8 @@ public class CreateUserTest {
                 .statusCode(STATUS_CODE_CREATED)
                 .extract().as(UsersCreateResponse.class);
 
-        Connection connection = UsersSqlSteps.getConnection();
-        UserModelBD userBD = new UsersSqlSteps(connection).getUsersModelBD(Integer.parseInt(usersCreateResponse.getId()));
-        connection.close();
-
-        AssertHelper.assertObjectsEqual(usersCreateResponse, userBD);
+        UserModelBD userBD = new UsersSqlSteps().getUsersModelBD(Integer.parseInt(usersCreateResponse.getId()));
+        assertUserCreateFieldsEqual(userBD, usersCreateResponse);
     }
 
     /**
@@ -98,9 +68,7 @@ public class CreateUserTest {
     @DisplayName("Удаление User после завершения тестов")
     public void deleteUserInDataBase() {
         if (usersCreateResponse != null) {
-            Connection connection = UsersSqlSteps.getConnection();
-            new UsersSqlSteps(connection).deleteUser(usersCreateResponse.getId());
-            connection.close();
+            new UsersSqlSteps().deleteUser(String.valueOf(usersCreateResponse.getId()));
         }
     }
 }

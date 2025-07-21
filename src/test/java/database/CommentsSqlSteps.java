@@ -2,7 +2,6 @@ package database;
 
 import config.BaseConfig;
 import database.model.CommentModelBD;
-import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.aeonbits.owner.ConfigFactory;
 
@@ -12,7 +11,6 @@ import java.time.LocalDateTime;
 /**
  * Метод для взаимодействия с БД для сущности Comment
  */
-@AllArgsConstructor
 public class CommentsSqlSteps {
 
     /**
@@ -44,12 +42,7 @@ public class CommentsSqlSteps {
     private static final BaseConfig config = ConfigFactory.create(BaseConfig.class, System.getenv());
 
     /**
-     * Экземпляр connection
-     */
-    private final Connection connection;
-
-    /**
-     * Метод открытия подключения к базе данных с использованием try-with-resources
+     * Метод открытия подключения к базе данных
      *
      * @return экземпляр подключения
      */
@@ -64,7 +57,7 @@ public class CommentsSqlSteps {
      *
      * @param id идентификатор поля, которое удаляем
      */
-    public void deleteComment(String id) {
+    public static void deleteComment(String id) {
         try (Connection connection = getConnection();
              Statement stmt = connection.createStatement()) {
             stmt.executeUpdate(String.format(DELETE_SQL_REQUEST_COMMENT, COMMENT_ID_FIELD, id));
@@ -84,7 +77,8 @@ public class CommentsSqlSteps {
              Statement stmt = connection.createStatement()) {
             ResultSet result = stmt.executeQuery(String.format(SELECT_BY_ID_SQL_REQUEST_COMMENT, COMMENT_ID_FIELD, id));
             if (result.next()) {
-                CommentModelBD commentBD = CommentModelBD.builder()
+                return
+                        CommentModelBD.builder()
                         .id(Integer.valueOf(result.getString(COMMENT_ID_FIELD)))
                         .post(Integer.valueOf(result.getString(COMMENT_POST_ID_FIELD)))
                         .author(Integer.valueOf(result.getString(USER_ID_FIELD)))
@@ -99,7 +93,6 @@ public class CommentsSqlSteps {
                         .status(result.getString(COMMENT_APPROVED_FIELD))
                         .type(result.getString(COMMENT_TYPE_FIELD))
                         .build();
-                return commentBD;
             }
         } catch (SQLException e) {
             e.printStackTrace();

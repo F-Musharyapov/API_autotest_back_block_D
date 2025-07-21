@@ -75,6 +75,5 @@ public class UserModelBD {
      */
     @JsonProperty("user_url")
     private final String url;
-
 }
 
