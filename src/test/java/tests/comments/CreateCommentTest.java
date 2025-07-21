@@ -1,7 +1,6 @@
 package tests.comments;
 
 import database.CommentsSqlSteps;
-import helpers.AssertHelper;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -11,6 +10,7 @@ import pojo.comments.CommentsCreateResponse;
 import pojo.convert.CommentConvertPojo;
 import tests.BaseTest;
 
+import static helpers.AssertHelper.assertCommentCreateFieldsEqual;
 import static helpers.TestDataHelper.*;
 import static io.restassured.RestAssured.given;
 
@@ -49,9 +49,7 @@ public class CreateCommentTest extends BaseTest {
                 .statusCode(STATUS_CODE_CREATED)
                 .extract().as(CommentsCreateResponse.class);
 
-        AssertHelper.assertObjectsEqual(
-                CommentConvertPojo.from(commentsCreateResponse),
-                new CommentsSqlSteps().getCommentsModelBD(commentsCreateResponse.getId()));
+        assertCommentCreateFieldsEqual(new CommentsSqlSteps().getCommentsModelBD(commentsCreateResponse.getId()), CommentConvertPojo.from(commentsCreateResponse));
     }
 
     /**

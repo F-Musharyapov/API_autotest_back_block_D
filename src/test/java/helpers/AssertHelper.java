@@ -1,16 +1,19 @@
 package helpers;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import database.model.CommentModelBD;
+import database.model.PostModelBD;
 import database.model.UserModelBD;
 import org.assertj.core.api.Assertions;
+import pojo.comments.CommentsDeleteResponse;
+import pojo.convert.CommentConvertPojo;
+import pojo.convert.PostConvertPojo;
+import pojo.posts.PostsDeleteResponse;
 import pojo.users.UsersCreateResponse;
+import pojo.users.UsersDeleteResponse;
 import pojo.users.UsersReadResponse;
+import pojo.users.UsersUpdateResponse;
 
-import java.time.LocalDateTime;
 import java.util.Objects;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Набор Assert
@@ -18,137 +21,245 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class AssertHelper extends Assertions {
 
     /**
-     * Сравнение двух объектов по полям
-     * @param expected ожидаемый объект
-     * @param actual фактический объект
+     * Сравнение данных для класса CreateCommentTest
+     *
+     * @param expected ожидаемые данные
+     * @param actual   актуальные данные
      */
-    public static void assertObjectsEqual(Object expected, Object actual) {
-        assertThat(actual)
-                .usingRecursiveComparison()
-                .isEqualTo(expected);
+    public static void assertCommentCreateFieldsEqual(CommentModelBD expected, CommentConvertPojo actual) {
+        assertCheckField("Id", expected.getId(), actual.getId());
+        assertCheckField("Post", expected.getPost(), actual.getPost());
+        assertCheckField("Author_name", expected.getAuthor_name(), actual.getAuthor_name());
+        assertCheckField("Author_email", expected.getAuthor_email(), actual.getAuthor_email());
+        assertCheckField("Author_url", expected.getAuthor_url(), actual.getAuthor_url());
+        assertCheckField("Author_ip", expected.getAuthor_ip(), actual.getAuthor_ip());
+        assertCheckField("Date", expected.getDate(), actual.getDate());
+        assertCheckField("Date_gmt", expected.getDate_gmt(), actual.getDate_gmt());
+        assertCheckField("Content", expected.getContent(), actual.getContent());
+        assertCheckField("Status", expected.getStatus(), actual.getStatus());
+        assertCheckField("Author_user_agent", expected.getAuthor_user_agent(), actual.getAuthor_user_agent());
+        assertCheckField("Type", expected.getType(), actual.getType());
+        assertCheckField("Author", expected.getAuthor(), actual.getAuthor());
     }
 
     /**
-     * Сравнение объектов User по указанным полям
-     * @param expected ожидаемый объект
-     * @param actual фактический объект
+     * Сравнение данных для класса ReadCommentTest
+     *
+     * @param expected ожидаемые данные
+     * @param actual   актуальные данные
      */
-    public static void assertUserFieldsEqual(Object expected, Object actual) {
-        assertThat(expected)
-                .usingRecursiveComparison()
-                .ignoringAllOverriddenEquals()
-                .ignoringFields(
-                        "id", "name", "url", "description", "slug"
-                )
-                .isEqualTo(actual);
+    public static void assertCommentReadFieldsEqual(CommentModelBD expected, CommentConvertPojo actual) {
+        assertCheckField("Id", expected.getId(), actual.getId());
+        assertCheckField("Post", expected.getPost(), actual.getPost());
+        assertCheckField("Author_name", expected.getAuthor_name(), actual.getAuthor_name());
+        assertCheckField("Author_url", expected.getAuthor_url(), actual.getAuthor_url());
+        assertCheckField("Date", expected.getDate(), actual.getDate());
+        assertCheckField("Date_gmt", expected.getDate_gmt(), actual.getDate_gmt());
+        assertCheckField("Content", expected.getContent(), actual.getContent());
+        assertCheckField("Status", expected.getStatus(), actual.getStatus());
+        assertCheckField("Type", expected.getType(), actual.getType());
+        assertCheckField("Author", expected.getAuthor(), actual.getAuthor());
     }
 
     /**
-     * Проверка статуса удаления user
-     * @param veriable статус удаления
+     * Сравнение данных для класса UpdateCommentTest
+     *
+     * @param expected ожидаемые данные
+     * @param actual   актуальные данные
      */
-    public static void assertStatusUserDeleted(Boolean veriable) {
-        assertEquals(true, veriable,
-                "Статус пользователя должен быть true");
+    public static void assertCommentUpdateFieldsEqual(CommentModelBD expected, CommentConvertPojo actual) {
+        assertCheckField("Id", expected.getId(), actual.getId());
+        assertCheckField("Post", expected.getPost(), actual.getPost());
+        assertCheckField("Author_name", expected.getAuthor_name(), actual.getAuthor_name());
+        assertCheckField("Author_email", expected.getAuthor_email(), actual.getAuthor_email());
+        assertCheckField("Author_url", expected.getAuthor_url(), actual.getAuthor_url());
+        assertCheckField("Author_ip", expected.getAuthor_ip(), actual.getAuthor_ip());
+        assertCheckField("Date", expected.getDate(), actual.getDate());
+        assertCheckField("Date_gmt", expected.getDate_gmt(), actual.getDate_gmt());
+        assertCheckField("Content", expected.getContent(), actual.getContent());
+        assertCheckField("Status", expected.getStatus(), actual.getStatus());
+        assertCheckField("Author_user_agent", expected.getAuthor_user_agent(), actual.getAuthor_user_agent());
+        assertCheckField("Type", expected.getType(), actual.getType());
+        assertCheckField("Author", expected.getAuthor(), actual.getAuthor());
+    }
+
+    /**
+     * Сравнение данных для класса DeleteCommentTest
+     *
+     * @param expected ожидаемые данные
+     * @param actual   актуальные данные
+     */
+    public static void assertCommentDeleteStatusEqual(CommentModelBD expected, CommentsDeleteResponse actual) {
+        assertCheckField("status", "trash", expected.getStatus());
+        assertCheckField("status", "trash", actual.getStatus());
+    }
+
+    /**
+     * Сравнение данных для класса CreatePostTest
+     *
+     * @param expected ожидаемые данные
+     * @param actual   актуальные данные
+     */
+    public static void assertPostCreateFieldsEqual(PostModelBD expected, PostConvertPojo actual) {
+        assertCheckField("Id", expected.getId(), actual.getId());
+        assertCheckField("Author", expected.getAuthor(), actual.getAuthor());
+        assertCheckField("Date", expected.getDate(), actual.getDate());
+        assertCheckField("Date_gmt", expected.getDate_gmt(), actual.getDate_gmt());
+        assertCheckField("Content", expected.getContent(), actual.getContent());
+        assertCheckField("Title", expected.getTitle(), actual.getTitle());
+        assertCheckField("Excerpt", expected.getExcerpt(), actual.getExcerpt());
+        assertCheckField("Status", expected.getStatus(), actual.getStatus());
+        assertCheckField("Comment_status", expected.getComment_status(), actual.getComment_status());
+        assertCheckField("Ping_status", expected.getPing_status(), actual.getPing_status());
+        assertCheckField("Slug", expected.getSlug(), actual.getSlug());
+        assertCheckField("Modified", expected.getModified(), actual.getModified());
+        assertCheckField("Modified_gmt", expected.getModified_gmt(), actual.getModified_gmt());
+        assertCheckField("Guid", expected.getGuid(), actual.getGuid());
+        assertCheckField("Type", expected.getType(), actual.getType());
+    }
+
+    /**
+     * Сравнение данных для класса ReadPostTest
+     *
+     * @param expected ожидаемые данные
+     * @param actual   актуальные данные
+     */
+    public static void assertPostReadFieldsEqual(PostModelBD expected, PostConvertPojo actual) {
+        assertCheckField("Id", expected.getId(), actual.getId());
+        assertCheckField("Author", expected.getAuthor(), actual.getAuthor());
+        assertCheckField("Date", expected.getDate(), actual.getDate());
+        assertCheckField("Date_gmt", expected.getDate_gmt(), actual.getDate_gmt());
+        assertCheckField("Content", expected.getContent(), actual.getContent());
+        assertCheckField("Title", expected.getTitle(), actual.getTitle());
+        assertCheckField("Excerpt", expected.getExcerpt(), actual.getExcerpt());
+        assertCheckField("Status", expected.getStatus(), actual.getStatus());
+        assertCheckField("Comment_status", expected.getComment_status(), actual.getComment_status());
+        assertCheckField("Ping_status", expected.getPing_status(), actual.getPing_status());
+        assertCheckField("Slug", expected.getSlug(), actual.getSlug());
+        assertCheckField("Modified", expected.getModified(), actual.getModified());
+        assertCheckField("Modified_gmt", expected.getModified_gmt(), actual.getModified_gmt());
+        assertCheckField("Guid", expected.getGuid(), actual.getGuid());
+    }
+
+    /**
+     * Сравнение данных для класса UpdatePostTest
+     *
+     * @param expected ожидаемые данные
+     * @param actual   актуальные данные
+     */
+    public static void assertPostUpdateFieldsEqual(PostModelBD expected, PostConvertPojo actual) {
+        assertCheckField("Id", expected.getId(), actual.getId());
+        assertCheckField("Author", expected.getAuthor(), actual.getAuthor());
+        assertCheckField("Date", expected.getDate(), actual.getDate());
+        assertCheckField("Date_gmt", expected.getDate_gmt(), actual.getDate_gmt());
+        assertCheckField("Content", expected.getContent(), actual.getContent());
+        assertCheckField("Title", expected.getTitle(), actual.getTitle());
+        assertCheckField("Excerpt", expected.getExcerpt(), actual.getExcerpt());
+        assertCheckField("Status", expected.getStatus(), actual.getStatus());
+        assertCheckField("Comment_status", expected.getComment_status(), actual.getComment_status());
+        assertCheckField("Ping_status", expected.getPing_status(), actual.getPing_status());
+        assertCheckField("Slug", expected.getSlug(), actual.getSlug());
+        assertCheckField("Modified", expected.getModified(), actual.getModified());
+        assertCheckField("Modified_gmt", expected.getModified_gmt(), actual.getModified_gmt());
+        assertCheckField("Guid", expected.getGuid(), actual.getGuid());
+        assertCheckField("Type", expected.getType(), actual.getType());
+    }
+
+    /**
+     * Сравнение данных для класса DeletePostTest
+     *
+     * @param expected ожидаемые данные
+     * @param actual   актуальные данные
+     */
+    public static void assertPostDeleteStatusEqual(PostModelBD expected, PostsDeleteResponse actual) {
+        assertCheckField("status", "trash", expected.getStatus());
+        assertCheckField("status", "trash", actual.getStatus());
+    }
+
+    /**
+     * Сравнение данных для класса CreateUserTest
+     *
+     * @param expected ожидаемые данные
+     * @param actual   актуальные данные
+     */
+    public static void assertUserCreateFieldsEqual(UserModelBD expected, UsersCreateResponse actual) {
+        assertCheckField("Id", expected.getId(), actual.getId());
+        assertCheckField("Username", expected.getUsername(), actual.getUsername());
+        assertCheckField("Slug", expected.getSlug(), actual.getSlug());
+        assertCheckField("Email", expected.getEmail(), actual.getEmail());
+        assertCheckField("Nickname", expected.getNickname(), actual.getNickname());
+        assertCheckField("First_name", expected.getFirst_name(), actual.getFirst_name());
+        assertCheckField("Last_name", expected.getLast_name(), actual.getLast_name());
+        assertCheckField("Description", expected.getDescription(), actual.getDescription());
+        assertCheckField("Registered_date", expected.getRegistered_date(), actual.getRegistered_date());
+        assertCheckField("Name", expected.getName(), actual.getName());
+        assertCheckField("Url", expected.getUrl(), actual.getUrl());
+    }
+
+    /**
+     * Сравнение данных для класса ReadUserTest
+     *
+     * @param expected ожидаемые данные
+     * @param actual   актуальные данные
+     */
+    public static void assertUserReadFieldsEqual(UserModelBD expected, UsersReadResponse actual) {
+        assertCheckField("Id", expected.getId(), actual.getId());
+        assertCheckField("Slug", expected.getSlug(), actual.getSlug());
+        assertCheckField("Description", expected.getDescription(), actual.getDescription());
+        assertCheckField("Name", expected.getName(), actual.getName());
+        assertCheckField("Url", expected.getUrl(), actual.getUrl());
+    }
+
+    /**
+     * Сравнение данных для класса UpdateUserTest
+     *
+     * @param expected ожидаемые данные
+     * @param actual   актуальные данные
+     */
+    public static void assertUserUpdateFieldsEqual(UserModelBD expected, UsersUpdateResponse actual) {
+        assertCheckField("Id", expected.getId(), actual.getId());
+        assertCheckField("Username", expected.getUsername(), actual.getUsername());
+        assertCheckField("Slug", expected.getSlug(), actual.getSlug());
+        assertCheckField("Email", expected.getEmail(), actual.getEmail());
+        assertCheckField("Nickname", expected.getNickname(), actual.getNickname());
+        assertCheckField("First_name", expected.getFirst_name(), actual.getFirst_name());
+        assertCheckField("Last_name", expected.getLast_name(), actual.getLast_name());
+        assertCheckField("Description", expected.getDescription(), actual.getDescription());
+        assertCheckField("Registered_date", expected.getRegistered_date(), actual.getRegistered_date());
+        assertCheckField("Name", expected.getName(), actual.getName());
+        assertCheckField("Url", expected.getUrl(), actual.getUrl());
+    }
+
+    /**
+     * Сравнение данных для класса DeleteUserTest
+     *
+     * @param object проверяемый объект
+     */
+    public static void assertUserDeleteStatusEqual(UsersDeleteResponse object) {
+        assertCheckField("deleted", true, object.getDeleted());
+    }
+
+    /**
+     * Метод проверки совпадения проверяемого поля
+     *
+     * @param fieldName     проверяемое поле
+     * @param expectedValue ожидаемые данные
+     * @param actualValue   актуальные данные
+     */
+    private static void assertCheckField(String fieldName, Object expectedValue, Object actualValue) {
+        if (!Objects.equals(expectedValue, actualValue)) {
+            throw new AssertionError(fieldName + " не совпадает: expected= " + expectedValue + ", actual= " + actualValue);
+        }
     }
 
     /**
      * Проверка наличия user в БД
+     *
      * @param bdObject ответ наличия user в БД
      */
     public static void assertUserDeletedBD(Object bdObject) {
         assertThat(bdObject)
                 .withFailMessage("Пользователь не удалился из БД")
                 .isNull();
-    }
-
-    /**
-     * Проверка статуса удаления post
-     * @param status статус удаления
-     */
-    public static void assertStatusPostDeleted(String status) {
-        assertEquals("trash", status,
-                "Статус должен быть 'trash'");
-    }
-
-    /**
-     * Проверка статуса удаления comment
-     * @param status статус удаления
-     */
-    public static void assertStatusCommentDeleted(String status) {
-        assertEquals("trash", status,
-                "Статус должен быть 'trash'");
-    }
-
-    /**
-     * Сравнение объектов comment по указанным полям
-     * @param expected ожидаемый объект
-     * @param actual фактический объект
-     */
-    public static void assertCommentFieldsEqual(Object expected, Object actual) {
-        assertThat(expected)
-                .usingRecursiveComparison()
-                .ignoringAllOverriddenEquals()
-                .ignoringFields(
-                        "author_email", "author_ip", "author_user_agent"
-                )
-                .isEqualTo(actual);
-    }
-
-
-    //UsersCreateResponse
-    public static void assertUserCreateFieldsEqual(UserModelBD expected, UsersCreateResponse actual) {
-        if (!Objects.equals(expected.getId(), actual.getId())) {
-            throw new AssertionError("Id не совпадает: expected= " + expected.getEmail() + ", actual= " + actual.getId());
-        }
-        if (!Objects.equals(expected.getUsername(), actual.getUsername())) {
-            throw new AssertionError("Username не совпадает: expected= " + expected.getUsername() + ", actual= " + actual.getUsername());
-        }
-        if (!Objects.equals(expected.getSlug(), actual.getSlug())) {
-            throw new AssertionError("Username не совпадает: expected= " + expected.getSlug() + ", actual= " + actual.getSlug());
-        }
-        if (!Objects.equals(expected.getEmail(), actual.getEmail())) {
-            throw new AssertionError("Username не совпадает: expected= " + expected.getEmail() + ", actual= " + actual.getEmail());
-        }
-        if (!Objects.equals(expected.getNickname(), actual.getNickname())) {
-            throw new AssertionError("Username не совпадает: expected= " + expected.getNickname() + ", actual= " + actual.getNickname());
-        }
-        if (!Objects.equals(expected.getFirst_name(), actual.getFirst_name())) {
-            throw new AssertionError("Username не совпадает: expected= " + expected.getFirst_name() + ", actual= " + actual.getFirst_name());
-        }
-        if (!Objects.equals(expected.getLast_name(), actual.getLast_name())) {
-            throw new AssertionError("Username не совпадает: expected= " + expected.getLast_name() + ", actual= " + actual.getLast_name());
-        }
-        if (!Objects.equals(expected.getDescription(), actual.getDescription())) {
-            throw new AssertionError("Username не совпадает: expected= " + expected.getDescription() + ", actual= " + actual.getDescription());
-        }
-        if (!Objects.equals(expected.getRegistered_date(), actual.getRegistered_date())) {
-            throw new AssertionError("Username не совпадает: expected= " + expected.getRegistered_date() + ", actual= " + actual.getRegistered_date());
-        }
-        if (!Objects.equals(expected.getName(), actual.getName())) {
-            throw new AssertionError("Username не совпадает: expected= " + expected.getName() + ", actual= " + actual.getName());
-        }
-        if (!Objects.equals(expected.getUrl(), actual.getUrl())) {
-            throw new AssertionError("Username не совпадает: expected= " + expected.getUrl() + ", actual= " + actual.getUrl());
-        }
-    }
-
-    //UsersReadResponse
-    public static void assertUserReadFieldsEqual(UserModelBD expected, UsersReadResponse actual) {
-        if (!Objects.equals(expected.getId(), actual.getId())) {
-            throw new AssertionError("Id не совпадает: expected= " + expected.getEmail() + ", actual= " + actual.getId());
-        }
-        if (!Objects.equals(expected.getSlug(), actual.getSlug())) {
-            throw new AssertionError("Username не совпадает: expected= " + expected.getSlug() + ", actual= " + actual.getSlug());
-        }
-        if (!Objects.equals(expected.getDescription(), actual.getDescription())) {
-            throw new AssertionError("Username не совпадает: expected= " + expected.getDescription() + ", actual= " + actual.getDescription());
-        }
-        if (!Objects.equals(expected.getName(), actual.getName())) {
-            throw new AssertionError("Username не совпадает: expected= " + expected.getName() + ", actual= " + actual.getName());
-        }
-        if (!Objects.equals(expected.getUrl(), actual.getUrl())) {
-            throw new AssertionError("Username не совпадает: expected= " + expected.getUrl() + ", actual= " + actual.getUrl());
-        }
     }
 }

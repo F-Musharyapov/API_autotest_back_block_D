@@ -1,7 +1,6 @@
 package tests.users;
 
 import database.UsersSqlSteps;
-import database.model.UserModelBD;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -56,8 +55,7 @@ public class CreateUserTest extends BaseTest {
                 .statusCode(STATUS_CODE_CREATED)
                 .extract().as(UsersCreateResponse.class);
 
-        UserModelBD userBD = new UsersSqlSteps().getUsersModelBD(Integer.parseInt(usersCreateResponse.getId()));
-        assertUserCreateFieldsEqual(userBD, usersCreateResponse);
+        assertUserCreateFieldsEqual(new UsersSqlSteps().getUsersModelBD(Integer.parseInt(usersCreateResponse.getId())), usersCreateResponse);
     }
 
     /**

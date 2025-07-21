@@ -1,12 +1,7 @@
 package tests.comments;
 
-import config.BaseConfig;
 import database.CommentsSqlSteps;
-import helpers.AssertHelper;
-import helpers.BaseRequests;
-import io.restassured.specification.RequestSpecification;
 import lombok.SneakyThrows;
-import org.aeonbits.owner.ConfigFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,8 +10,7 @@ import pojo.comments.CommentsCreateResponse;
 import pojo.comments.CommentsDeleteResponse;
 import tests.BaseTest;
 
-import java.io.IOException;
-
+import static helpers.AssertHelper.assertCommentDeleteStatusEqual;
 import static helpers.TestDataHelper.*;
 import static io.restassured.RestAssured.given;
 
@@ -38,6 +32,7 @@ public class DeleteCommentTest extends BaseTest {
     /**
      * Метод создания сущности comment перед тестом
      */
+    @BeforeEach
     public void createComment() {
 
         commentsCreateRequest = CommentsCreateRequest.builder()
@@ -69,7 +64,6 @@ public class DeleteCommentTest extends BaseTest {
                 .statusCode(STATUS_CODE_OK)
                 .extract().as(CommentsDeleteResponse.class);
 
-        AssertHelper.assertStatusCommentDeleted(commentsDeleteResponse.getStatus());
-        AssertHelper.assertStatusCommentDeleted(new CommentsSqlSteps().getCommentsModelBD(commentsCreateResponse.getId()).getStatus());
+        assertCommentDeleteStatusEqual(new CommentsSqlSteps().getCommentsModelBD(commentsCreateResponse.getId()), commentsDeleteResponse);
     }
 }

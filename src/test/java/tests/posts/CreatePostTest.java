@@ -1,7 +1,6 @@
 package tests.posts;
 
 import database.PostsSqlSteps;
-import helpers.AssertHelper;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -11,6 +10,7 @@ import pojo.posts.PostsCreateRequest;
 import pojo.posts.PostsCreateResponse;
 import tests.BaseTest;
 
+import static helpers.AssertHelper.assertPostCreateFieldsEqual;
 import static helpers.TestDataHelper.*;
 import static io.restassured.RestAssured.given;
 
@@ -56,8 +56,7 @@ public class CreatePostTest extends BaseTest {
                 .statusCode(STATUS_CODE_CREATED)
                 .extract().as(PostsCreateResponse.class);
 
-        AssertHelper.assertObjectsEqual(PostConvertPojo.from(postsCreateResponse),
-                new PostsSqlSteps().getPostModelBD(postsCreateResponse.getId()));
+        assertPostCreateFieldsEqual(new PostsSqlSteps().getPostModelBD(postsCreateResponse.getId()), PostConvertPojo.from(postsCreateResponse));
     }
 
     /**

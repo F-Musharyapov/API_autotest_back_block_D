@@ -13,6 +13,7 @@ import pojo.comments.CommentsUpdateResponse;
 import pojo.convert.CommentConvertPojo;
 import tests.BaseTest;
 
+import static helpers.AssertHelper.assertCommentUpdateFieldsEqual;
 import static helpers.TestDataHelper.*;
 import static io.restassured.RestAssured.given;
 
@@ -82,8 +83,7 @@ public class UpdateCommentTest extends BaseTest {
                 .statusCode(STATUS_CODE_OK)
                 .extract().as(CommentsUpdateResponse.class);
 
-        AssertHelper.assertObjectsEqual(CommentConvertPojo.from(commentsUpdateResponse),
-                new CommentsSqlSteps().getCommentsModelBD(commentsUpdateResponse.getId()));
+        assertCommentUpdateFieldsEqual(new CommentsSqlSteps().getCommentsModelBD(commentsUpdateResponse.getId()), CommentConvertPojo.from(commentsUpdateResponse));
     }
 
     /**

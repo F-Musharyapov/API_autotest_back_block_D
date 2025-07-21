@@ -1,8 +1,8 @@
 package tests.users;
 
 import database.UsersSqlSteps;
-import helpers.AssertHelper;
 import lombok.SneakyThrows;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import pojo.users.UsersCreateRequest;
@@ -11,6 +11,8 @@ import pojo.users.UsersDeleteRequest;
 import pojo.users.UsersDeleteResponse;
 import tests.BaseTest;
 
+import static helpers.AssertHelper.assertUserDeleteStatusEqual;
+import static helpers.AssertHelper.assertUserDeletedBD;
 import static helpers.TestDataHelper.*;
 import static io.restassured.RestAssured.given;
 
@@ -32,6 +34,7 @@ public class DeleteUserTest extends BaseTest {
     /**
      * Метод создания сущности user перед тестом
      */
+    @BeforeEach
     public void createUser() {
 
         usersCreateRequest = UsersCreateRequest.builder()
@@ -76,8 +79,7 @@ public class DeleteUserTest extends BaseTest {
                 .statusCode(STATUS_CODE_OK)
                 .extract().as(UsersDeleteResponse.class);
 
-        AssertHelper.assertStatusUserDeleted(usersDeleteResponse.getDeleted());
-        AssertHelper.assertUserDeletedBD(new UsersSqlSteps().
-                getUsersModelBD(Integer.parseInt(usersCreateResponse.getId())));
+        assertUserDeleteStatusEqual(usersDeleteResponse);
+        assertUserDeletedBD(new UsersSqlSteps().getUsersModelBD(Integer.parseInt(usersCreateResponse.getId())));
     }
 }

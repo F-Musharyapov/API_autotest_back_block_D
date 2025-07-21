@@ -1,8 +1,8 @@
 package tests.posts;
 
 import database.PostsSqlSteps;
-import helpers.AssertHelper;
 import lombok.SneakyThrows;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import pojo.posts.PostsCreateRequest;
@@ -10,6 +10,7 @@ import pojo.posts.PostsCreateResponse;
 import pojo.posts.PostsDeleteResponse;
 import tests.BaseTest;
 
+import static helpers.AssertHelper.assertPostDeleteStatusEqual;
 import static helpers.TestDataHelper.*;
 import static io.restassured.RestAssured.given;
 
@@ -31,6 +32,7 @@ public class DeletePostTest extends BaseTest {
     /**
      * Метод создания сущности post перед тестом
      */
+    @BeforeEach
     public void createPost() {
 
         postsCreateRequest = PostsCreateRequest.builder()
@@ -69,7 +71,6 @@ public class DeletePostTest extends BaseTest {
                 .statusCode(STATUS_CODE_OK)
                 .extract().as(PostsDeleteResponse.class);
 
-        AssertHelper.assertStatusPostDeleted(postsDeleteResponse.getStatus());
-        AssertHelper.assertStatusPostDeleted(new PostsSqlSteps().getPostModelBD(postsCreateResponse.getId()).getStatus());
+        assertPostDeleteStatusEqual(new PostsSqlSteps().getPostModelBD(postsCreateResponse.getId()), postsDeleteResponse);
     }
 }

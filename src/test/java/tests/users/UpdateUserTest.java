@@ -1,9 +1,9 @@
 package tests.users;
 
 import database.UsersSqlSteps;
-import helpers.AssertHelper;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import pojo.users.UsersCreateRequest;
@@ -12,6 +12,7 @@ import pojo.users.UsersUpdateRequest;
 import pojo.users.UsersUpdateResponse;
 import tests.BaseTest;
 
+import static helpers.AssertHelper.assertUserUpdateFieldsEqual;
 import static helpers.TestDataHelper.*;
 import static io.restassured.RestAssured.given;
 
@@ -43,6 +44,7 @@ public class UpdateUserTest extends BaseTest {
     /**
      * Метод создания сущности user перед тестом
      */
+    @BeforeEach
     public void createUser() {
 
         usersCreateRequest = UsersCreateRequest.builder()
@@ -94,8 +96,7 @@ public class UpdateUserTest extends BaseTest {
                 .statusCode(STATUS_CODE_OK)
                 .extract().as(UsersUpdateResponse.class);
 
-        AssertHelper.assertObjectsEqual(usersUpdateResponse,
-                new UsersSqlSteps().getUsersModelBD(Integer.parseInt(usersUpdateResponse.getId())));
+        assertUserUpdateFieldsEqual(new UsersSqlSteps().getUsersModelBD(Integer.parseInt(usersUpdateResponse.getId())), usersUpdateResponse);
     }
 
     /**

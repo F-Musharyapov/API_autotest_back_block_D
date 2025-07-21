@@ -1,10 +1,9 @@
 package tests.users;
 
 import database.UsersSqlSteps;
-import database.model.UserModelBD;
-import helpers.AssertHelper;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import pojo.users.UsersCreateRequest;
@@ -12,7 +11,7 @@ import pojo.users.UsersCreateResponse;
 import pojo.users.UsersReadResponse;
 import tests.BaseTest;
 
-import static helpers.AssertHelper.*;
+import static helpers.AssertHelper.assertUserReadFieldsEqual;
 import static helpers.TestDataHelper.*;
 import static io.restassured.RestAssured.given;
 
@@ -39,6 +38,7 @@ public class ReadUserTest extends BaseTest {
     /**
      * Метод создания сущности user перед тестом
      */
+    @BeforeEach
     public void createUser() {
 
         usersCreateRequest = UsersCreateRequest.builder()
@@ -77,8 +77,7 @@ public class ReadUserTest extends BaseTest {
                 .statusCode(STATUS_CODE_OK)
                 .extract().as(UsersReadResponse.class);
 
-        UserModelBD userBD = new UsersSqlSteps().getUsersModelBD(Integer.parseInt(usersReadResponse.getId()));
-        assertUserReadFieldsEqual(userBD, usersReadResponse);
+        assertUserReadFieldsEqual(new UsersSqlSteps().getUsersModelBD(Integer.parseInt(usersReadResponse.getId())), usersReadResponse);
     }
 
     /**

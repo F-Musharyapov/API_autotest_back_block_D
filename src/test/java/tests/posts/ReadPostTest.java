@@ -1,9 +1,9 @@
 package tests.posts;
 
 import database.PostsSqlSteps;
-import helpers.AssertHelper;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import pojo.convert.PostConvertPojo;
@@ -12,6 +12,7 @@ import pojo.posts.PostsCreateResponse;
 import pojo.posts.PostsReadResponse;
 import tests.BaseTest;
 
+import static helpers.AssertHelper.assertPostReadFieldsEqual;
 import static helpers.TestDataHelper.*;
 import static io.restassured.RestAssured.given;
 
@@ -38,6 +39,7 @@ public class ReadPostTest extends BaseTest {
     /**
      * Метод создания сущности post перед тестом
      */
+    @BeforeEach
     public void createPost() {
 
         postsCreateRequest = PostsCreateRequest.builder()
@@ -76,8 +78,7 @@ public class ReadPostTest extends BaseTest {
                 .statusCode(STATUS_CODE_OK)
                 .extract().as(PostsReadResponse.class);
 
-        AssertHelper.assertObjectsEqual(PostConvertPojo.from(postsReadResponse),
-                new PostsSqlSteps().getPostModelBD(postsReadResponse.getId()));
+        assertPostReadFieldsEqual(new PostsSqlSteps().getPostModelBD(postsReadResponse.getId()), PostConvertPojo.from(postsReadResponse));
     }
 
     /**

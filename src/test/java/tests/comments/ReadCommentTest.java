@@ -1,14 +1,8 @@
 package tests.comments;
 
-import config.BaseConfig;
 import database.CommentsSqlSteps;
-import helpers.AssertHelper;
-import helpers.BaseRequests;
-import io.restassured.specification.RequestSpecification;
 import lombok.SneakyThrows;
-import org.aeonbits.owner.ConfigFactory;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import pojo.comments.CommentsCreateRequest;
@@ -17,8 +11,7 @@ import pojo.comments.CommentsReadResponse;
 import pojo.convert.CommentConvertPojo;
 import tests.BaseTest;
 
-import java.io.IOException;
-
+import static helpers.AssertHelper.assertCommentReadFieldsEqual;
 import static helpers.TestDataHelper.*;
 import static io.restassured.RestAssured.given;
 
@@ -76,8 +69,7 @@ public class ReadCommentTest extends BaseTest {
                 .statusCode(STATUS_CODE_OK)
                 .extract().as(CommentsReadResponse.class);
 
-        AssertHelper.assertCommentFieldsEqual(CommentConvertPojo.from(commentsReadResponse),
-                new CommentsSqlSteps().getCommentsModelBD(commentsReadResponse.getId()));
+        assertCommentReadFieldsEqual(new CommentsSqlSteps().getCommentsModelBD(commentsReadResponse.getId()), CommentConvertPojo.from(commentsReadResponse));
     }
 
     /**
