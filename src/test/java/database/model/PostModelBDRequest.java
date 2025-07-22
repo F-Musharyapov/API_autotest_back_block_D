@@ -89,9 +89,18 @@ public class PostModelBDRequest {
      */
     private final String type;
 
-
+    /**
+     * to_ping
+     */
     private final String to_ping;
-    private final String pinged;
-    private final String post_content_filtered;
 
+    /**
+     * pinged
+     */
+    private final String pinged;
+
+    /**
+     * post_content_filtered
+     */
+    private final String post_content_filtered;
 }

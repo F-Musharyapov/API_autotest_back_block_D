@@ -20,6 +20,9 @@ import static io.restassured.RestAssured.given;
 
 public class BDPostTest extends BaseTest {
 
+    /**
+     * Переменная для хранения id из базы данных
+     */
     private static String createdPostId;
 
     /**
@@ -53,8 +56,6 @@ public class BDPostTest extends BaseTest {
                 .build();
 
         this.createdPostId = String.valueOf(new PostsSqlSteps().createPostBD(postModelBDRequest));
-        //System.out.println("\nCreated comment with ID: " + createdPostId);
-        //System.out.println("\nCreated comment with ID: " + postModelBDRequest);
     }
 
     @SneakyThrows

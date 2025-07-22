@@ -20,6 +20,9 @@ import static io.restassured.RestAssured.given;
 
 public class BDCommentTest extends BaseTest {
 
+    /**
+     * Переменная для хранения id из базы данных
+     */
     static String createdCommentId;
 
     /**
@@ -44,9 +47,7 @@ public class BDCommentTest extends BaseTest {
                 .type(COMMENT_TYPE_BD)
                 .author(AUTHOR_ID)
                 .build();
-        //System.out.print("БД1 = " + commentModelBD);
         this.createdCommentId = String.valueOf(new CommentsSqlSteps().createCommentBD(commentModelBD)); // Сохраняем в поле класса
-        //System.out.println("\nCreated comment with ID: " + createdCommentId);
     }
 
     @SneakyThrows
@@ -60,9 +61,6 @@ public class BDCommentTest extends BaseTest {
                 .then()
                 .statusCode(STATUS_CODE_OK)
                 .extract().as(CommentsReadResponse.class);
-        //System.out.println("\nАПИ = " + commentsReadResponse);
-        //CommentModelBD commentsbd = new CommentsSqlSteps().getCommentsModelBD(Integer.parseInt(createdCommentId));
-        //System.out.println("\nБД2 = " + commentsbd);
         assertCommentReadFieldsEqual(new CommentsSqlSteps().getCommentsModelBD(Integer.parseInt(createdCommentId)), CommentConvertPojo.from(commentsReadResponse));
     }
 

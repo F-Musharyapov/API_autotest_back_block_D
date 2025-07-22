@@ -32,9 +32,6 @@ public class PostsSqlSteps {
     private static final String POST_MODIFIED_GMT_FIELD = "post_modified_gmt"; //modified_gmt
     private static final String GUID_FIELD = "guid"; //guid raw
     private static final String POST_TYPE_FIELD = "post_type"; //type
-    //private static final String POST_FORMAT_FIELD = "post_format"; //type
-    private static final String POST_TO_PING_FIELD = "to_ping"; //type
-    private static final String POST_PINGED_FIELD = "pinged"; //type
 
     /**
      * Константы с запросами в БД
@@ -53,6 +50,7 @@ public class PostsSqlSteps {
 
     /**
      * Метод открытия подключения к базе данных
+     *
      * @return экземпляр подключения
      */
     @SneakyThrows
@@ -63,6 +61,7 @@ public class PostsSqlSteps {
 
     /**
      * Метод удаления post в БД
+     *
      * @param id идентификатор поля, которое удаляем
      */
     public void deletePost(String id) {
@@ -76,6 +75,7 @@ public class PostsSqlSteps {
 
     /**
      * Метод запроса в БД для получения данных post
+     *
      * @param id идентификатор поля, которое удаляем
      * @return экзепляр с необходимыми полями
      */
@@ -86,22 +86,22 @@ public class PostsSqlSteps {
             if (result.next()) {
                 return
                         PostModelBDResponse.builder()
-                        .id(Integer.valueOf(result.getString(ID_FIELD)))
-                        .author(Integer.valueOf(result.getString(POST_AUTHOR_FIELD)))
-                        .date(result.getObject(POST_DATE_FIELD, LocalDateTime.class))
-                        .date_gmt(result.getObject(POST_DATE_GMT_FIELD, LocalDateTime.class))
-                        .content(result.getString(POST_CONTENT_FIELD))
-                        .title(result.getString(POST_TITLE_FIELD))
-                        .excerpt(result.getString(POST_EXCEPT_FIELD))
-                        .status(result.getString(POST_STATUS_FIELD))
-                        .comment_status(result.getString(COMMENT_STATUS_FIELD))
-                        .ping_status(result.getString(PING_STATUS_FIELD))
-                        .slug(result.getString(POST_NAME_FIELD))
-                        .modified(result.getObject(POST_MODIFIED_FIELD, LocalDateTime.class))
-                        .modified_gmt(result.getObject(POST_MODIFIED_GMT_FIELD, LocalDateTime.class))
-                        .guid(result.getString(GUID_FIELD))
-                        .type(result.getString(POST_TYPE_FIELD))
-                        .build();
+                                .id(Integer.valueOf(result.getString(ID_FIELD)))
+                                .author(Integer.valueOf(result.getString(POST_AUTHOR_FIELD)))
+                                .date(result.getObject(POST_DATE_FIELD, LocalDateTime.class))
+                                .date_gmt(result.getObject(POST_DATE_GMT_FIELD, LocalDateTime.class))
+                                .content(result.getString(POST_CONTENT_FIELD))
+                                .title(result.getString(POST_TITLE_FIELD))
+                                .excerpt(result.getString(POST_EXCEPT_FIELD))
+                                .status(result.getString(POST_STATUS_FIELD))
+                                .comment_status(result.getString(COMMENT_STATUS_FIELD))
+                                .ping_status(result.getString(PING_STATUS_FIELD))
+                                .slug(result.getString(POST_NAME_FIELD))
+                                .modified(result.getObject(POST_MODIFIED_FIELD, LocalDateTime.class))
+                                .modified_gmt(result.getObject(POST_MODIFIED_GMT_FIELD, LocalDateTime.class))
+                                .guid(result.getString(GUID_FIELD))
+                                .type(result.getString(POST_TYPE_FIELD))
+                                .build();
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -139,20 +139,19 @@ public class PostsSqlSteps {
             int affectedRows = pstmt.executeUpdate();
 
             if (affectedRows == 0) {
-                throw new SQLException("Creating comment failed, no rows affected.");
+                throw new SQLException();
             }
 
             try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
-                    return generatedKeys.getLong(1);  // Получаем по индексу (первый столбец)
-                }
-                else {
-                    throw new SQLException("Creating comment failed, no ID obtained.");
+                    return generatedKeys.getLong(1);
+                } else {
+                    throw new SQLException();
                 }
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to create comment", e);
+            throw new RuntimeException(e);
         }
     }
 }

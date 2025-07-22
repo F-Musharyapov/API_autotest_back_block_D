@@ -1,10 +1,8 @@
 package database;
 
 import config.BaseConfig;
-import database.model.PostModelBDRequest;
 import database.model.UserModelBD;
 import database.model.UserModelBDRequest;
-import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.aeonbits.owner.ConfigFactory;
 
@@ -66,9 +64,9 @@ public class UsersSqlSteps {
         return DriverManager.getConnection(config.urlDb(), config.userDb(), config.passwordDb());
     }
 
-
     /**
      * Метод запроса в БД для получения данных user
+     *
      * @param id идентификатор поля, которое удаляем
      * @return экзепляр с необходимыми полями
      */
@@ -79,18 +77,18 @@ public class UsersSqlSteps {
             if (result.next()) {
                 return
                         UserModelBD.builder()
-                        .id(result.getString(ID_FIELD))
-                        .username(result.getString(LOGIN_FIELD))
-                        .slug(result.getString(NICENAME_FIELD))
-                        .email(result.getString(EMAIL_FIELD))
-                        .nickname(result.getString(NICKNAME_FIELD))
-                        .first_name(result.getString(FIRST_NAME_FIELD))
-                        .last_name(result.getString(LAST_NAME_FIELD))
-                        .description(result.getString(DESCRIPTION_FIELD))
-                        .registered_date(result.getObject(DATE_FIELD, LocalDateTime.class))
-                        .name(result.getString(DISPLAY_NAME_FIELD))
-                        .url(result.getString(URL_FIELD))
-                        .build();
+                                .id(result.getString(ID_FIELD))
+                                .username(result.getString(LOGIN_FIELD))
+                                .slug(result.getString(NICENAME_FIELD))
+                                .email(result.getString(EMAIL_FIELD))
+                                .nickname(result.getString(NICKNAME_FIELD))
+                                .first_name(result.getString(FIRST_NAME_FIELD))
+                                .last_name(result.getString(LAST_NAME_FIELD))
+                                .description(result.getString(DESCRIPTION_FIELD))
+                                .registered_date(result.getObject(DATE_FIELD, LocalDateTime.class))
+                                .name(result.getString(DISPLAY_NAME_FIELD))
+                                .url(result.getString(URL_FIELD))
+                                .build();
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -105,25 +103,25 @@ public class UsersSqlSteps {
         Connection connection = null;
         try {
             connection = getConnection();
-            connection.setAutoCommit(false); // Начинаем транзакцию
-            long userId = createUserBD(connection, userRequest);// Создаем запись в wp_users
-            createUserBDMeta(connection, userId, userRequest);// Добавляем метаданные в таблицу wp_usermeta
-            connection.commit(); // Фиксируем транзакцию
+            connection.setAutoCommit(false);
+            long userId = createUserBD(connection, userRequest);
+            createUserBDMeta(connection, userId, userRequest);
+            connection.commit();
 
             return userId;
         } catch (SQLException e) {
             if (connection != null) {
                 try {
-                    connection.rollback(); // Откатываем при ошибке
+                    connection.rollback();
                 } catch (SQLException ex) {
-                    throw new RuntimeException("Rollback failed", ex);
+                    throw new RuntimeException(ex);
                 }
             }
-            throw new RuntimeException("Failed to create user with meta", e);
+            throw new RuntimeException(e);
         } finally {
             if (connection != null) {
                 try {
-                    connection.setAutoCommit(true); // Восстанавливаем авто-коммит
+                    connection.setAutoCommit(true);
                     connection.close();
                 } catch (SQLException e) {
                     e.printStackTrace();
@@ -152,19 +150,18 @@ public class UsersSqlSteps {
             int affectedRows = pstmt.executeUpdate();
 
             if (affectedRows == 0) {
-                throw new SQLException("Creating user failed, no rows affected.");
+                throw new SQLException();
             }
 
             try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     return generatedKeys.getLong(1);
-                }
-                else {
-                    throw new SQLException("Creating user failed, no ID obtained.");
+                } else {
+                    throw new SQLException();
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to create user", e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -196,7 +193,7 @@ public class UsersSqlSteps {
             }
             pstmt.executeBatch();
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to create user", e);
+            throw new RuntimeException(e);
         }
     }
 

@@ -7,7 +7,6 @@ import org.aeonbits.owner.ConfigFactory;
 
 import java.sql.*;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 
 /**
  * Метод для взаимодействия с БД для сущности Comment
@@ -130,20 +129,19 @@ public class CommentsSqlSteps {
             int affectedRows = pstmt.executeUpdate();
 
             if (affectedRows == 0) {
-                throw new SQLException("Creating comment failed, no rows affected.");
+                throw new SQLException();
             }
 
             try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
-                    return generatedKeys.getLong(1);  // Получаем по индексу (первый столбец)
-                }
-                else {
-                    throw new SQLException("Creating comment failed, no ID obtained.");
+                    return generatedKeys.getLong(1);
+                } else {
+                    throw new SQLException();
                 }
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to create comment", e);
+            throw new RuntimeException(e);
         }
     }
 }

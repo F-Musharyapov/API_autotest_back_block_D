@@ -1,9 +1,7 @@
 package database.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
 
@@ -12,32 +10,77 @@ import java.time.LocalDateTime;
  */
 @Data
 @Builder
-//@EqualsAndHashCode(exclude = {"id","password"})
 public class UserModelBDRequest {
 
     /**
      * Уникальный идентифигатор пользователя
      */
     private final String id;
+
+    /**
+     * Уникальный идентифигатор пользователя
+     */
     private final String user_login;
+
+    /**
+     * Пароль
+     */
     private final String user_pass;
+
+    /**
+     * Буквенно-цифровой идентификатор пользователя nicename
+     */
     private final String user_nicename;
+
+    /**
+     * Адрес почты
+     */
     private final String user_email;
+
+    /**
+     * URL пользователя
+     */
     private final String user_url;
+
+    /**
+     * Дата и время регистрации
+     */
     private final LocalDateTime user_registered;
+
+    /**
+     * Ключ активации
+     */
     private final String user_activation_key;
+
+    /**
+     * Статус пользователя
+     */
     private final String user_status;
+
+    /**
+     * Отображаемое имя
+     */
     private final String display_name;
 
+    /**
+     * Псевдоним пользователя
+     */
     private final String nickname; //псевдоним
-    private final String first_name;
-    private final String last_name;
-    private final String description;
 
+    /**
+     * Имя пользователя
+     */
+    private final String first_name;
+
+    /**
+     * Фамилия пользователя
+     */
+    private final String last_name;
+
+    /**
+     * Описание пользователя
+     */
+    private final String description;
 }
 
-/*
-
-
- */
 

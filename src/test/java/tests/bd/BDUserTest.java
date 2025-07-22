@@ -18,6 +18,9 @@ import static io.restassured.RestAssured.given;
 
 public class BDUserTest extends BaseTest {
 
+    /**
+     * Переменная для хранения id из базы данных
+     */
     private static String createdUserId;
 
     /**
@@ -26,7 +29,7 @@ public class BDUserTest extends BaseTest {
     private UsersReadResponse usersReadResponse;
 
     /**
-     * Метод создания сущности user базе данных перед тестом  API
+     * Метод создания сущности user базе данных перед тестом API
      */
     @BeforeEach
     public void CreateUserBD() {
@@ -45,10 +48,7 @@ public class BDUserTest extends BaseTest {
                 .last_name(getUserRandomLastname())
                 .description(getUserRandomDescription())
                 .build();
-
-        //System.out.print("БД1 = " + userModelBDRequest);
         this.createdUserId = String.valueOf(new UsersSqlSteps().createUserDoubleTable(userModelBDRequest));
-        //System.out.println("\nCreated comment with ID: " + createdUserId);
     }
 
     @SneakyThrows
@@ -62,8 +62,6 @@ public class BDUserTest extends BaseTest {
                 .then()
                 .statusCode(STATUS_CODE_OK)
                 .extract().as(UsersReadResponse.class);
-        //System.out.println("\nАПИ = " + usersReadResponse);
-        //System.out.println("\nБД2 = " + new UsersSqlSteps().getUsersModelBD(Integer.parseInt(createdUserId)));
         assertUserReadFieldsEqual(new UsersSqlSteps().getUsersModelBD(Integer.parseInt(createdUserId)), usersReadResponse);
     }
 

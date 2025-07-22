@@ -72,13 +72,6 @@ public interface BaseConfig extends Config {
     String readUserEndpoint();
 
     /**
-     * Эндпоинт чтения всех юзеров
-     *
-     * @return эндпоинт
-     */
-    String allUserEndpoint();
-
-    /**
      * Эндпоинт обновления юзера
      *
      * @return эндпоинт
@@ -107,13 +100,6 @@ public interface BaseConfig extends Config {
     String readPostEndpoint();
 
     /**
-     * Эндпоинт чтения всех Post
-     *
-     * @return эндпоинт
-     */
-    String allPostEndpoint();
-
-    /**
      * Эндпоинт обновления Post
      *
      * @return эндпоинт
@@ -140,13 +126,6 @@ public interface BaseConfig extends Config {
      * @return эндпоинт
      */
     String readCommentEndpoint();
-
-    /**
-     * Эндпоинт чтения всех Comment
-     *
-     * @return эндпоинт
-     */
-    String allCommentEndpoint();
 
     /**
      * Эндпоинт обновления Comment
