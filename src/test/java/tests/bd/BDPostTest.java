@@ -4,6 +4,7 @@ import database.PostsSqlSteps;
 import database.model.PostModelBDRequest;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import pojo.convert.PostConvertPojo;
@@ -26,8 +27,11 @@ public class BDPostTest extends BaseTest {
      */
     private PostsReadResponse postsReadResponse;
 
-    @Test
-    public void testCreatePostBD() {
+    /**
+     * Метод создания сущности post в базе данных перед тестом
+     */
+    @BeforeEach
+    public void CreatePostBD() {
         PostModelBDRequest postModelBDRequest = PostModelBDRequest.builder()
                 .author(AUTHOR_POST)
                 .date(LocalDateTime.now())
@@ -37,7 +41,7 @@ public class BDPostTest extends BaseTest {
                 .excerpt(getPostRandomExcerpt())
                 .status(getPostRandomStatus())
                 .comment_status(getPostRandomCommentStatus())
-                .ping_status(getPostRandomPingStatus())
+                .ping_status(PING_STATUS_POST)
                 .slug(getPostRandomSlug())
                 .modified(LocalDateTime.now())
                 .modified_gmt(LocalDateTime.now(ZoneOffset.UTC))
@@ -49,7 +53,14 @@ public class BDPostTest extends BaseTest {
                 .build();
 
         this.createdPostId = String.valueOf(new PostsSqlSteps().createPostBD(postModelBDRequest));
+        //System.out.println("\nCreated comment with ID: " + createdPostId);
+        //System.out.println("\nCreated comment with ID: " + postModelBDRequest);
+    }
 
+    @SneakyThrows
+    @Test
+    @DisplayName("Тестовый метод для проверки запроса API на получение данных, сравнение c данными в БД")
+    public void testPostReadAPI() {
         PostsReadResponse postsReadResponse = given()
                 .spec(requestSpecification)
                 .when()

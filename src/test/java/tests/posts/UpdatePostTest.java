@@ -56,7 +56,7 @@ public class UpdatePostTest extends BaseTest {
                 .author(AUTHOR_POST)
                 .excerpt(getPostRandomExcerpt())
                 .comment_status(getPostRandomCommentStatus())
-                .ping_status(getPostRandomPingStatus())
+                .ping_status(PING_STATUS_POST)
                 .format(getPostRandomFormat())
                 .sticky(getPostRandomSticky())
                 .build();
@@ -83,7 +83,7 @@ public class UpdatePostTest extends BaseTest {
                 .content(getPostRandomContent())
                 .excerpt(getPostRandomExcerpt())
                 .comment_status(getPostRandomCommentStatus())
-                .ping_status(getPostRandomPingStatus())
+                .ping_status(PING_STATUS_POST)
                 .format(getPostRandomFormat())
                 .sticky(getPostRandomSticky())
                 .build();

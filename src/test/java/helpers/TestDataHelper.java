@@ -37,16 +37,16 @@ public class TestDataHelper {
     public static final int AUTHOR_ID_UPDATE = 3;
     public static final int POST_ID_UPDATE = 6;
     public static final String SLUG_POST = "[a-z]{8}-[a-z]{6}-[a-z]{4}-[a-z]{2}-[a-z]{4}-[a-z]{8}";
-    public static final String[] STATUS_POST = {"publish", "future", "draft", "pending", "private"};
+    public static final String[] STATUS_POST = {"publish", "future", "draft", "pending"}; //приват убран
     public static final String TITLE_POST = "[a-z]{8} [a-z]{6} [a-z]{4}";
     public static final int AUTHOR_POST = 1;
     public static final String[] COMMENT_STATUS_POST = {"open", "closed"};
-    public static final String[] PING_STATUS_POST = {"open", "closed"};
+    public static final String PING_STATUS_POST = "open";
     public static final String[] FORMAT_POST = {"standard", "aside", "chat", "gallery", "link", "image", "quote", "status", "video", "audio"};
     public static final Boolean[] STICKY_POST = {true, false};
     public static final String GUID_POST = "http://localhost:8000/";
-    public static final String TO_PING_POST = "post";
-    public static final String TYPE_POST = "to_ping-to_ping";
+    public static final String TO_PING_POST = "to_ping-to_ping";
+    public static final String TYPE_POST = "post";
     public static final String PINGED_POST = "pinged-pinged";
     public static final String CONTENT_FILTERED_POST = "post_content_filtered";
 
@@ -140,10 +140,12 @@ public class TestDataHelper {
     public static String getPostRandomCommentStatus() {
         return COMMENT_STATUS_POST[random.nextInt(COMMENT_STATUS_POST.length)];
     }
-
+    /*
     public static String getPostRandomPingStatus() {
         return PING_STATUS_POST[random.nextInt(PING_STATUS_POST.length)];
     }
+
+     */
 
     public static String getPostRandomFormat() {
         return FORMAT_POST[random.nextInt(FORMAT_POST.length)];

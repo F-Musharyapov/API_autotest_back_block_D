@@ -4,6 +4,7 @@ import database.UsersSqlSteps;
 import database.model.UserModelBDRequest;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import pojo.users.UsersReadResponse;
@@ -24,8 +25,11 @@ public class BDUserTest extends BaseTest {
      */
     private UsersReadResponse usersReadResponse;
 
-    @Test
-    public void testCreateUserBD() {
+    /**
+     * Метод создания сущности user базе данных перед тестом  API
+     */
+    @BeforeEach
+    public void CreateUserBD() {
         UserModelBDRequest userModelBDRequest = UserModelBDRequest.builder()
                 .user_login(getUserRandomUserName())
                 .user_pass(getUserRandomPassword())
@@ -45,7 +49,12 @@ public class BDUserTest extends BaseTest {
         //System.out.print("БД1 = " + userModelBDRequest);
         this.createdUserId = String.valueOf(new UsersSqlSteps().createUserDoubleTable(userModelBDRequest));
         //System.out.println("\nCreated comment with ID: " + createdUserId);
+    }
 
+    @SneakyThrows
+    @Test
+    @DisplayName("Тестовый метод для проверки запроса API на получение данных, сравнение c данными в БД")
+    public void testUserReadAPI() {
         UsersReadResponse usersReadResponse = given()
                 .spec(requestSpecification)
                 .when()

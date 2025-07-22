@@ -4,6 +4,7 @@ import database.CommentsSqlSteps;
 import database.model.CommentModelBD;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import pojo.comments.CommentsReadResponse;
@@ -26,8 +27,11 @@ public class BDCommentTest extends BaseTest {
      */
     private CommentsReadResponse commentsReadResponse;
 
-    @Test
-    public void testCreateCommentBD() {
+    /**
+     * Метод создания сущности comment базе данных перед тестом  API
+     */
+    @BeforeEach
+    public void CreateCommentBD() {
         CommentModelBD commentModelBD = CommentModelBD.builder()
                 .post(POST_ID)
                 .author_url(AUTHOR_URL_BD)
@@ -43,7 +47,12 @@ public class BDCommentTest extends BaseTest {
         //System.out.print("БД1 = " + commentModelBD);
         this.createdCommentId = String.valueOf(new CommentsSqlSteps().createCommentBD(commentModelBD)); // Сохраняем в поле класса
         //System.out.println("\nCreated comment with ID: " + createdCommentId);
+    }
 
+    @SneakyThrows
+    @Test
+    @DisplayName("Тестовый метод для проверки запроса API на получение данных, сравнение c данными в БД")
+    public void testCommentReadAPI() {
         CommentsReadResponse commentsReadResponse = given()
                 .spec(requestSpecification)
                 .when()
@@ -55,7 +64,6 @@ public class BDCommentTest extends BaseTest {
         //CommentModelBD commentsbd = new CommentsSqlSteps().getCommentsModelBD(Integer.parseInt(createdCommentId));
         //System.out.println("\nБД2 = " + commentsbd);
         assertCommentReadFieldsEqual(new CommentsSqlSteps().getCommentsModelBD(Integer.parseInt(createdCommentId)), CommentConvertPojo.from(commentsReadResponse));
-
     }
 
     /**

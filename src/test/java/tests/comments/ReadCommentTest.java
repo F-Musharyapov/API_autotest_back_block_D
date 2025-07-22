@@ -3,6 +3,7 @@ package tests.comments;
 import database.CommentsSqlSteps;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import pojo.comments.CommentsCreateRequest;
@@ -38,6 +39,7 @@ public class ReadCommentTest extends BaseTest {
     /**
      * Метод создания сущности comment перед тестом
      */
+    @BeforeEach
     public void commentCreate() {
 
         commentsCreateRequest = CommentsCreateRequest.builder()
