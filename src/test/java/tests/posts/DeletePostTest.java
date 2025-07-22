@@ -71,6 +71,6 @@ public class DeletePostTest extends BaseTest {
                 .statusCode(STATUS_CODE_OK)
                 .extract().as(PostsDeleteResponse.class);
 
-        assertPostDeleteStatusEqual(new PostsSqlSteps().getPostModelBD(postsCreateResponse.getId()), postsDeleteResponse);
+        assertPostDeleteStatusEqual(new PostsSqlSteps().getPostModelBDResponse(postsCreateResponse.getId()), postsDeleteResponse);
     }
 }

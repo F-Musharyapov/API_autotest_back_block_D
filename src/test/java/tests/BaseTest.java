@@ -16,7 +16,6 @@ public class BaseTest {
     /**
      * Экземпляр конфигурации
      */
-    //protected BaseConfig config = ConfigFactory.create(BaseConfig.class, System.getenv());
     protected static final BaseConfig config = ConfigFactory.create(BaseConfig.class, System.getenv());
 
     /**

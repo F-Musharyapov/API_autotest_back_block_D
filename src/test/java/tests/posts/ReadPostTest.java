@@ -77,8 +77,7 @@ public class ReadPostTest extends BaseTest {
                 .then()
                 .statusCode(STATUS_CODE_OK)
                 .extract().as(PostsReadResponse.class);
-
-        assertPostReadFieldsEqual(new PostsSqlSteps().getPostModelBD(postsReadResponse.getId()), PostConvertPojo.from(postsReadResponse));
+        assertPostReadFieldsEqual(new PostsSqlSteps().getPostModelBDResponse(postsReadResponse.getId()), PostConvertPojo.from(postsReadResponse));
     }
 
     /**

@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 @EqualsAndHashCode(exclude = {"id"})
-public class PostModelBD {
+public class PostModelBDRequest {
 
     /**
      * Уникальный идентификатор поста
@@ -88,4 +88,10 @@ public class PostModelBD {
      * Тип записи
      */
     private final String type;
+
+
+    private final String to_ping;
+    private final String pinged;
+    private final String post_content_filtered;
+
 }

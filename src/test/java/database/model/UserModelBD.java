@@ -12,13 +12,15 @@ import java.time.LocalDateTime;
  */
 @Data
 @Builder
-@EqualsAndHashCode(exclude = {"id"})
+@EqualsAndHashCode(exclude = {"id","password"})
 public class UserModelBD {
 
     /**
      * Уникальный идентифигатор пользователя
      */
     private final String id;
+
+    private final String password;
 
     /**
      * Логин

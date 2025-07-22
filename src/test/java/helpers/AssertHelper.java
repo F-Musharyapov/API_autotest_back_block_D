@@ -1,7 +1,7 @@
 package helpers;
 
 import database.model.CommentModelBD;
-import database.model.PostModelBD;
+import database.model.PostModelBDResponse;
 import database.model.UserModelBD;
 import org.assertj.core.api.Assertions;
 import pojo.comments.CommentsDeleteResponse;
@@ -100,7 +100,7 @@ public class AssertHelper extends Assertions {
      * @param expected ожидаемые данные
      * @param actual   актуальные данные
      */
-    public static void assertPostCreateFieldsEqual(PostModelBD expected, PostConvertPojo actual) {
+    public static void assertPostCreateFieldsEqual(PostModelBDResponse expected, PostConvertPojo actual) {
         assertCheckField("Id", expected.getId(), actual.getId());
         assertCheckField("Author", expected.getAuthor(), actual.getAuthor());
         assertCheckField("Date", expected.getDate(), actual.getDate());
@@ -124,7 +124,7 @@ public class AssertHelper extends Assertions {
      * @param expected ожидаемые данные
      * @param actual   актуальные данные
      */
-    public static void assertPostReadFieldsEqual(PostModelBD expected, PostConvertPojo actual) {
+    public static void assertPostReadFieldsEqual(PostModelBDResponse expected, PostConvertPojo actual) {
         assertCheckField("Id", expected.getId(), actual.getId());
         assertCheckField("Author", expected.getAuthor(), actual.getAuthor());
         assertCheckField("Date", expected.getDate(), actual.getDate());
@@ -147,7 +147,7 @@ public class AssertHelper extends Assertions {
      * @param expected ожидаемые данные
      * @param actual   актуальные данные
      */
-    public static void assertPostUpdateFieldsEqual(PostModelBD expected, PostConvertPojo actual) {
+    public static void assertPostUpdateFieldsEqual(PostModelBDResponse expected, PostConvertPojo actual) {
         assertCheckField("Id", expected.getId(), actual.getId());
         assertCheckField("Author", expected.getAuthor(), actual.getAuthor());
         assertCheckField("Date", expected.getDate(), actual.getDate());
@@ -171,7 +171,7 @@ public class AssertHelper extends Assertions {
      * @param expected ожидаемые данные
      * @param actual   актуальные данные
      */
-    public static void assertPostDeleteStatusEqual(PostModelBD expected, PostsDeleteResponse actual) {
+    public static void assertPostDeleteStatusEqual(PostModelBDResponse expected, PostsDeleteResponse actual) {
         assertCheckField("status", "trash", expected.getStatus());
         assertCheckField("status", "trash", actual.getStatus());
     }

@@ -2,6 +2,9 @@ package helpers;
 
 import com.github.javafaker.Faker;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Random;
 
 /**
@@ -26,6 +29,9 @@ public class TestDataHelper {
     public static final String SLUG_USER = "[a-z]{8}-[a-z]{6}-[a-z]{4}";
     public static final int REASSIGN_USER = 1;
     public static final boolean FORCE_USER = true;
+    public static final String ACTIVATION_KEY_USER = "user_activation_key";
+    public static final String STATUS_USER = "0";
+
     public static final int AUTHOR_ID = 1;
     public static final int POST_ID = 1;
     public static final int AUTHOR_ID_UPDATE = 3;
@@ -38,6 +44,22 @@ public class TestDataHelper {
     public static final String[] PING_STATUS_POST = {"open", "closed"};
     public static final String[] FORMAT_POST = {"standard", "aside", "chat", "gallery", "link", "image", "quote", "status", "video", "audio"};
     public static final Boolean[] STICKY_POST = {true, false};
+    public static final String GUID_POST = "http://localhost:8000/";
+    public static final String TO_PING_POST = "post";
+    public static final String TYPE_POST = "to_ping-to_ping";
+    public static final String PINGED_POST = "pinged-pinged";
+    public static final String CONTENT_FILTERED_POST = "post_content_filtered";
+
+
+    public static final String AUTHOR_URL_BD = "http://localhost:8000";
+    public static final String AUTHOR_IP_BD = "172.19.0.1";
+    public static final String COMMENT_TYPE_BD = "comment";
+    public static final String COMMENT_APPROVED_BD = "1";
+    public static final String COMMENT_USER_AGENT_BD = "Apache-HttpClient/4.5.13 (Java/21.0.3)";
+
+
+
+
 
     /**
      * Статусы выполнения запросов

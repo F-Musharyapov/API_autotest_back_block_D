@@ -1,8 +1,8 @@
 package database;
 
 import config.BaseConfig;
-import database.model.PostModelBD;
-import lombok.AllArgsConstructor;
+import database.model.PostModelBDRequest;
+import database.model.PostModelBDResponse;
 import lombok.SneakyThrows;
 import org.aeonbits.owner.ConfigFactory;
 
@@ -27,18 +27,24 @@ public class PostsSqlSteps {
     private static final String POST_STATUS_FIELD = "post_status"; //status
     private static final String COMMENT_STATUS_FIELD = "comment_status"; //comment_status
     private static final String PING_STATUS_FIELD = "ping_status"; //ping_status
-    private static final String POST_PASSWORD_FIELD = "post_password"; //password
     private static final String POST_NAME_FIELD = "post_name"; //slug
     private static final String POST_MODIFIED_FIELD = "post_modified"; //modified
     private static final String POST_MODIFIED_GMT_FIELD = "post_modified_gmt"; //modified_gmt
     private static final String GUID_FIELD = "guid"; //guid raw
     private static final String POST_TYPE_FIELD = "post_type"; //type
+    //private static final String POST_FORMAT_FIELD = "post_format"; //type
+    private static final String POST_TO_PING_FIELD = "to_ping"; //type
+    private static final String POST_PINGED_FIELD = "pinged"; //type
 
     /**
      * Константы с запросами в БД
      */
     private static final String DELETE_SQL_REQUEST_POST = "DELETE FROM wp_posts WHERE %s = %s";
     private static final String SELECT_BY_ID_SQL_REQUEST_POST = "SELECT * FROM wp_posts WHERE %s = %d";
+    private static final String INSERT_POST_SQL = "INSERT INTO wp_posts " +
+            "(post_author, post_date, post_date_gmt, post_content, post_title, " +
+            "post_excerpt, post_status, comment_status, ping_status, post_name, post_modified, post_modified_gmt, guid, post_type, to_ping, pinged, post_content_filtered) " +
+            "SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?";
 
     /**
      * Экземпляр конфигурации
@@ -73,13 +79,13 @@ public class PostsSqlSteps {
      * @param id идентификатор поля, которое удаляем
      * @return экзепляр с необходимыми полями
      */
-    public PostModelBD getPostModelBD(int id) {
+    public PostModelBDResponse getPostModelBDResponse(int id) {
         try (Connection connection = getConnection();
              Statement stmt = connection.createStatement()) {
             ResultSet result = stmt.executeQuery(String.format(SELECT_BY_ID_SQL_REQUEST_POST, ID_FIELD, id));
             if (result.next()) {
                 return
-                        PostModelBD.builder()
+                        PostModelBDResponse.builder()
                         .id(Integer.valueOf(result.getString(ID_FIELD)))
                         .author(Integer.valueOf(result.getString(POST_AUTHOR_FIELD)))
                         .date(result.getObject(POST_DATE_FIELD, LocalDateTime.class))
@@ -101,5 +107,52 @@ public class PostsSqlSteps {
             e.printStackTrace();
         }
         return null;
+    }
+
+    /**
+     * Метод создания Post в БД
+     *
+     * @param postModelBDRequest объект с параметрами для создания
+     */
+    public long createPostBD(PostModelBDRequest postModelBDRequest) {
+        try (Connection connection = getConnection();
+             PreparedStatement pstmt = connection.prepareStatement(INSERT_POST_SQL, Statement.RETURN_GENERATED_KEYS)) {
+
+            pstmt.setInt(1, postModelBDRequest.getAuthor());
+            pstmt.setTimestamp(2, Timestamp.valueOf(postModelBDRequest.getDate()));
+            pstmt.setTimestamp(3, Timestamp.valueOf(postModelBDRequest.getDate_gmt()));
+            pstmt.setString(4, postModelBDRequest.getContent());
+            pstmt.setString(5, postModelBDRequest.getTitle());
+            pstmt.setString(6, postModelBDRequest.getExcerpt());
+            pstmt.setString(7, postModelBDRequest.getStatus());
+            pstmt.setString(8, postModelBDRequest.getComment_status());
+            pstmt.setString(9, postModelBDRequest.getPing_status());
+            pstmt.setString(10, postModelBDRequest.getSlug());
+            pstmt.setTimestamp(11, Timestamp.valueOf(postModelBDRequest.getModified()));
+            pstmt.setTimestamp(12, Timestamp.valueOf(postModelBDRequest.getModified_gmt()));
+            pstmt.setString(13, postModelBDRequest.getGuid());
+            pstmt.setString(14, postModelBDRequest.getType());
+            pstmt.setString(15, postModelBDRequest.getTo_ping());
+            pstmt.setString(16, postModelBDRequest.getPinged());
+            pstmt.setString(17, postModelBDRequest.getPost_content_filtered());
+
+            int affectedRows = pstmt.executeUpdate();
+
+            if (affectedRows == 0) {
+                throw new SQLException("Creating comment failed, no rows affected.");
+            }
+
+            try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    return generatedKeys.getLong(1);  // Получаем по индексу (первый столбец)
+                }
+                else {
+                    throw new SQLException("Creating comment failed, no ID obtained.");
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to create comment", e);
+        }
     }
 }

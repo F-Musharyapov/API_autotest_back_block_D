@@ -56,7 +56,7 @@ public class CreatePostTest extends BaseTest {
                 .statusCode(STATUS_CODE_CREATED)
                 .extract().as(PostsCreateResponse.class);
 
-        assertPostCreateFieldsEqual(new PostsSqlSteps().getPostModelBD(postsCreateResponse.getId()), PostConvertPojo.from(postsCreateResponse));
+        assertPostCreateFieldsEqual(new PostsSqlSteps().getPostModelBDResponse(postsCreateResponse.getId()), PostConvertPojo.from(postsCreateResponse));
     }
 
     /**

@@ -97,7 +97,7 @@ public class UpdatePostTest extends BaseTest {
                 .statusCode(STATUS_CODE_OK)
                 .extract().as(PostsUpdateResponse.class);
 
-        assertPostUpdateFieldsEqual(new PostsSqlSteps().getPostModelBD(postsUpdateResponse.getId()), PostConvertPojo.from(postsUpdateResponse));
+        assertPostUpdateFieldsEqual(new PostsSqlSteps().getPostModelBDResponse(postsUpdateResponse.getId()), PostConvertPojo.from(postsUpdateResponse));
     }
 
     /**
