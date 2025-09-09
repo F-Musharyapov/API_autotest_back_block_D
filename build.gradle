@@ -1,0 +1,53 @@
+plugins {
+    id 'java'
+}
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+compileJava.options.encoding = 'UTF-8'
+compileTestJava.options.encoding = 'UTF-8'
+
+dependencies {
+    // JUnit аннотации
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+
+    // Database
+    implementation 'mysql:mysql-connector-java:8.0.29'
+
+    // Rest-assured
+    testImplementation 'io.rest-assured:rest-assured:5.5.5'
+
+    //Lombok аннотации
+    testCompileOnly 'org.projectlombok:lombok:1.18.30'
+    compileOnly 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.30'
+
+    //Allure аннотации
+    testImplementation 'io.qameta.allure:allure-junit5:2.17.3'
+
+    //AssertJ аннотации
+    testImplementation 'org.assertj:assertj-core:3.22.0'
+
+    //Faker аннотации
+    implementation 'com.github.javafaker:javafaker:1.0.2'
+
+    //Owner аннотации
+    implementation 'org.aeonbits.owner:owner:1.0.12'
+
+    implementation 'org.slf4j:slf4j-simple:1.7.30'
+
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.0'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
+}
+
+test {
+    useJUnitPlatform()
+}
